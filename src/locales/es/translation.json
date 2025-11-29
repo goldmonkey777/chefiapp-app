@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "ChefIApp",
+    "tagline": "Gestión de Equipos y Rendimiento para Hostelería"
+  },
+  "auth": {
+    "welcome": "Bienvenido a ChefIApp",
+    "signIn": "Iniciar sesión con Google",
+    "signOut": "Cerrar sesión",
+    "loading": "Cargando..."
+  },
+  "navigation": {
+    "home": "Inicio",
+    "tasks": "Tareas",
+    "team": "Equipo",
+    "rankings": "Rankings",
+    "profile": "Perfil",
+    "settings": "Configuración"
+  },
+  "tasks": {
+    "title": "Tareas",
+    "myTasks": "Mis Tareas",
+    "pending": "Pendientes",
+    "completed": "Completadas",
+    "add": "Añadir Tarea",
+    "edit": "Editar Tarea",
+    "delete": "Eliminar Tarea",
+    "assign": "Asignar",
+    "priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    }
+  },
+  "team": {
+    "title": "Equipo",
+    "members": "Miembros",
+    "departments": "Departamentos",
+    "add": "Añadir Miembro",
+    "edit": "Editar Miembro"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "top": "Mejores Desempeños",
+    "xp": "XP",
+    "level": "Nivel",
+    "achievements": "Logros"
+  },
+  "profile": {
+    "title": "Perfil",
+    "edit": "Editar Perfil",
+    "name": "Nombre",
+    "email": "Email",
+    "department": "Departamento",
+    "position": "Cargo",
+    "since": "Desde"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "terms": "Términos de Uso",
+    "about": "Acerca de",
+    "version": "Versión"
+  },
+  "legal": {
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "gdpr": "Cumplimiento RGPD",
+    "ccpa": "Cumplimiento CCPA"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Añadir",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  }
+}

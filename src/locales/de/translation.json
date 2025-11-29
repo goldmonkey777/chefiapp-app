@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "ChefIApp",
+    "tagline": "Team- und Leistungsmanagement für Gastgewerbe"
+  },
+  "auth": {
+    "welcome": "Willkommen bei ChefIApp",
+    "signIn": "Mit Google anmelden",
+    "signOut": "Abmelden",
+    "loading": "Wird geladen..."
+  },
+  "navigation": {
+    "home": "Startseite",
+    "tasks": "Aufgaben",
+    "team": "Team",
+    "rankings": "Ranglisten",
+    "profile": "Profil",
+    "settings": "Einstellungen"
+  },
+  "tasks": {
+    "title": "Aufgaben",
+    "myTasks": "Meine Aufgaben",
+    "pending": "Ausstehend",
+    "completed": "Abgeschlossen",
+    "add": "Aufgabe hinzufügen",
+    "edit": "Aufgabe bearbeiten",
+    "delete": "Aufgabe löschen",
+    "assign": "Zuweisen",
+    "priority": {
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig"
+    }
+  },
+  "team": {
+    "title": "Team",
+    "members": "Mitglieder",
+    "departments": "Abteilungen",
+    "add": "Mitglied hinzufügen",
+    "edit": "Mitglied bearbeiten"
+  },
+  "rankings": {
+    "title": "Ranglisten",
+    "top": "Top-Performer",
+    "xp": "XP",
+    "level": "Stufe",
+    "achievements": "Erfolge"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Profil bearbeiten",
+    "name": "Name",
+    "email": "E-Mail",
+    "department": "Abteilung",
+    "position": "Position",
+    "since": "Seit"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "notifications": "Benachrichtigungen",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "about": "Über",
+    "version": "Version"
+  },
+  "legal": {
+    "privacy": "Datenschutzerklärung",
+    "terms": "Nutzungsbedingungen",
+    "gdpr": "DSGVO-Konformität",
+    "ccpa": "CCPA-Konformität"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "success": "Erfolg"
+  }
+}

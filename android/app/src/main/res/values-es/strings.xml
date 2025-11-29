@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ChefIApp</string>
+    <string name="title_activity_main">ChefIApp</string>
+    <string name="package_name">com.chefiapp.app</string>
+    <string name="custom_url_scheme">com.chefiapp.app</string>
+</resources>

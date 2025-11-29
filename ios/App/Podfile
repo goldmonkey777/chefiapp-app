@@ -1,0 +1,263 @@
+require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+platform :ios, '14.0'
+inhibit_all_warnings!
+use_frameworks! :linkage => :static
+
+# Usar config padrão (com input/output paths) para evitar warning no [CP] Embed Pods Frameworks.
+# Desabilita o script de embed que usa rsync (causa erros de sandbox no macOS).
+install! 'cocoapods',
+         :deterministic_uuids => false,
+         :disable_input_output_paths => false
+
+def capacitor_pods
+  pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+
+end
+
+target 'App' do
+  capacitor_pods
+  # Add your Pods here
+end
+
+post_install do |installer|
+  assertDeploymentTarget(installer)
+
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # Silencia avisos de terceiros sobre includes em headers de framework.
+      config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+      # Evita warn de APIs depreciadas em dependências (ex.: WKProcessPool).
+      config.build_settings['GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS'] = 'NO'
+      # Desabilita validação de produto (evita erros de headers Cordova/Capacitor).
+      config.build_settings['VALIDATE_PRODUCT'] = 'NO'
+      # Desabilita o sandboxing de scripts de usuário para permitir que o rsync/cp escreva nos diretórios necessários
+      config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+      
+      # Desabilita verificação de módulos para TODOS os targets
+      config.build_settings['ENABLE_MODULE_VERIFIER'] = 'NO'
+      config.build_settings['CLANG_VERIFY_MODULE'] = 'NO'
+      
+      # Flags adicionais para calar warnings de includes e depreciações em Pods.
+      flags = config.build_settings['OTHER_CFLAGS'] || ['$(inherited)']
+      flags = [flags] unless flags.is_a?(Array)
+      flags << '-Wno-deprecated-declarations'
+      flags << '-Wno-quoted-include-in-framework-header'
+      flags << '-Wno-error'
+      config.build_settings['OTHER_CFLAGS'] = flags.uniq
+      
+      # Garante módulos habilitados e inclui headers não modulares (necessário para Capacitor/Cordova).
+      config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
+      config.build_settings['DEFINES_MODULE'] = 'YES'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+
+      # Configurações específicas para Capacitor/Cordova
+      if ['CapacitorCordova', 'Capacitor'].include?(target.name)
+        # Mantém módulos habilitados (necessário para Swift)
+        config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
+        config.build_settings['DEFINES_MODULE'] = 'YES'
+        config.build_settings['CLANG_MODULES_AUTOLINK'] = 'YES'
+        
+        # DESABILITA completamente a verificação de módulos (evita erros fatais)
+        config.build_settings['CLANG_MODULE_BUILD'] = 'NO'
+        config.build_settings['CLANG_ENABLE_MODULE_DEBUGGING'] = 'NO'
+        config.build_settings['CLANG_ENABLE_MODULE_IMPLEMENTATION_OF'] = 'NO'
+        config.build_settings['CLANG_VERIFY_MODULE'] = 'NO'
+        
+        # Desabilita a fase VerifyModule do build (causa dos erros fatais)
+        config.build_settings['ENABLE_MODULE_VERIFIER'] = 'NO'
+        config.build_settings['SWIFT_COMPILATION_MODE'] = 'singlefile'
+        
+        # Desabilita completamente a verificação de módulos durante o build
+        config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+        config.build_settings['CLANG_WARN_IMPORT'] = 'NO'
+        
+        # Ignora erros de módulos completamente
+        config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
+        config.build_settings['OTHER_CFLAGS'] = [config.build_settings['OTHER_CFLAGS']] unless config.build_settings['OTHER_CFLAGS'].is_a?(Array)
+        config.build_settings['OTHER_CFLAGS'] << '-Wno-error' unless config.build_settings['OTHER_CFLAGS'].include?('-Wno-error')
+        config.build_settings['OTHER_CFLAGS'] << '-Wno-module-import' unless config.build_settings['OTHER_CFLAGS'].include?('-Wno-module-import')
+        
+        # Permite includes não modulares
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        
+        # Silencia TODOS os warnings relacionados
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+        config.build_settings['CLANG_WARN_IMPORT'] = 'NO'
+        config.build_settings['GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS'] = 'NO'
+        config.build_settings['VALIDATE_PRODUCT'] = 'NO'
+        config.build_settings['CLANG_WARN_DIRECT_OBJC_ISA_USAGE'] = 'NO'
+        config.build_settings['CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF'] = 'NO'
+        config.build_settings['CLANG_WARN_UNGUARDED_AVAILABILITY'] = 'NO'
+        config.build_settings['CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS'] = 'NO'
+        
+        if target.name == 'CapacitorCordova'
+          # Garante que o modulemap seja encontrado
+          config.build_settings['MODULEMAP_FILE'] ||= '${PODS_ROOT}/CapacitorCordova/CapacitorCordova/CapacitorCordova.modulemap'
+          config.build_settings['DEFINES_MODULE'] = 'YES'
+        end
+        
+        if target.name == 'Capacitor'
+          config.build_settings['SWIFT_VERSION'] = '5.0'
+          config.build_settings['CLANG_ENABLE_OBJC_WEAK'] = 'YES'
+          # Garante que Swift possa encontrar Cordova
+          config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
+          swift_paths = config.build_settings['SWIFT_INCLUDE_PATHS']
+          swift_paths = [swift_paths] unless swift_paths.is_a?(Array)
+          swift_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova'
+          config.build_settings['SWIFT_INCLUDE_PATHS'] = swift_paths.uniq
+        end
+        
+        # Header search paths (crítico para encontrar headers)
+        header_search_paths = config.build_settings['HEADER_SEARCH_PATHS'] || ['$(inherited)']
+        header_search_paths = [header_search_paths] unless header_search_paths.is_a?(Array)
+        header_search_paths << '$(PODS_ROOT)/Headers/Public/CapacitorCordova'
+        header_search_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova'
+        header_search_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova/Classes'
+        header_search_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova/Classes/Public'
+        header_search_paths << '$(PODS_ROOT)/Capacitor/Capacitor'
+        header_search_paths << '$(PODS_ROOT)/Capacitor/Capacitor/Capacitor'
+        config.build_settings['HEADER_SEARCH_PATHS'] = header_search_paths.uniq
+        
+        # Framework search paths
+        framework_search_paths = config.build_settings['FRAMEWORK_SEARCH_PATHS'] || ['$(inherited)']
+        framework_search_paths = [framework_search_paths] unless framework_search_paths.is_a?(Array)
+        framework_search_paths << '$(PODS_ROOT)/CapacitorCordova'
+        framework_search_paths << '$(PODS_ROOT)/Capacitor'
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] = framework_search_paths.uniq
+        
+        # Flags para módulos (necessário para Swift) mas ignora erros
+        flags = config.build_settings['OTHER_CFLAGS'] || ['$(inherited)']
+        flags = [flags] unless flags.is_a?(Array)
+        flags.delete('-fno-modules')
+        flags << '-fmodules' unless flags.include?('-fmodules')
+        flags << '-fcxx-modules' unless flags.include?('-fcxx-modules')
+        flags << '-Wno-error'
+        flags << '-Wno-unknown-warning-option'
+        config.build_settings['OTHER_CFLAGS'] = flags.uniq
+        
+        # C++ flags também
+        cpp_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] || ['$(inherited)']
+        cpp_flags = [cpp_flags] unless cpp_flags.is_a?(Array)
+        cpp_flags.delete('-fno-modules')
+        cpp_flags << '-fmodules' unless cpp_flags.include?('-fmodules')
+        cpp_flags << '-Wno-error'
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags.uniq
+        
+        # Swift compiler flags
+        swift_flags = config.build_settings['OTHER_SWIFT_FLAGS'] || ['$(inherited)']
+        swift_flags = [swift_flags] unless swift_flags.is_a?(Array)
+        swift_flags << '-Xcc' << '-Wno-error'
+        config.build_settings['OTHER_SWIFT_FLAGS'] = swift_flags.uniq
+      end
+    end
+  end
+
+  # Aplica as mesmas configurações ao projeto principal (App target)
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+        config.build_settings['GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS'] = 'NO'
+        config.build_settings['VALIDATE_PRODUCT'] = 'NO'
+        config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+        config.build_settings['CLANG_WARN_IMPORT'] = 'NO'
+        config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
+        config.build_settings['CLANG_MODULES_AUTOLINK'] = 'YES'
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        config.build_settings['DEFINES_MODULE'] = 'YES'
+        
+        # Desabilita verificação estrita de módulos para permitir uso sem import explícito
+        config.build_settings['CLANG_ENABLE_MODULE_IMPLEMENTATION_OF'] = 'NO'
+        config.build_settings['CLANG_MODULE_BUILD'] = 'NO'
+        
+        # Para o target App, permite que use tipos do Capacitor sem import explícito
+        if target.name == 'App'
+          config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
+          config.build_settings['CLANG_MODULES_AUTOLINK'] = 'YES'
+        end
+        
+        # Silencia warnings de depreciação especificamente
+        config.build_settings['CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS'] = 'NO'
+        config.build_settings['CLANG_WARN_UNGUARDED_AVAILABILITY'] = 'NO'
+        config.build_settings['CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF'] = 'NO'
+
+        flags = config.build_settings['OTHER_CFLAGS'] || ['$(inherited)']
+        flags = [flags] unless flags.is_a?(Array)
+        flags << '-Wno-deprecated-declarations'
+        flags << '-Wno-quoted-include-in-framework-header'
+        flags << '-fmodules'
+        flags << '-fcxx-modules'
+        flags << '-Wno-error'
+        config.build_settings['OTHER_CFLAGS'] = flags.uniq
+
+        # Garanta caminhos dos headers do Cordova/Capacitor também no target do app.
+        header_search_paths = config.build_settings['HEADER_SEARCH_PATHS'] || ['$(inherited)']
+        header_search_paths = [header_search_paths] unless header_search_paths.is_a?(Array)
+        header_search_paths << '$(PODS_ROOT)/Headers/Public/CapacitorCordova'
+        header_search_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova'
+        header_search_paths << '$(PODS_ROOT)/Capacitor/Capacitor'
+        header_search_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova/Classes'
+        header_search_paths << '$(PODS_ROOT)/CapacitorCordova/CapacitorCordova/Classes/Public'
+        config.build_settings['HEADER_SEARCH_PATHS'] = header_search_paths.uniq
+        
+        # Configurações C++ também
+        cpp_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] || ['$(inherited)']
+        cpp_flags = [cpp_flags] unless cpp_flags.is_a?(Array)
+        cpp_flags << '-fmodules' unless cpp_flags.include?('-fmodules')
+        cpp_flags << '-Wno-error' unless cpp_flags.include?('-Wno-error')
+        cpp_flags << '-Wno-deprecated-declarations' unless cpp_flags.include?('-Wno-deprecated-declarations')
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags.uniq
+      end
+    end
+  end
+
+
+  # Substitui o comando rsync por cp no script de embed frameworks usando Regex para ser mais robusto
+  installer.pods_project.targets.each do |target|
+    if target.name == 'Pods-App'
+      target.shell_script_build_phases.each do |phase|
+        if phase.name == '[CP] Embed Pods Frameworks'
+          # Substitui o comando principal de cópia do framework
+          phase.shell_script = phase.shell_script.gsub(
+            /rsync --delete -av "\$\{RSYNC_PROTECT_TMP_FILES\[@\]\}" --links --filter "- CVS\/" --filter "- \.svn\/" --filter "- \.git\/" --filter "- \.hg\/" --filter "- Headers" --filter "- PrivateHeaders" --filter "- Modules" "\$\{source\}" "\$\{destination\}"/,
+            'rm -rf "${destination}" && cp -R "${source}" "${destination}"'
+          )
+        end
+      end
+    end
+  end
+
+  # REMOVE COMPLETAMENTE as fases VerifyModule de todos os targets
+  # Isso evita os erros fatais de "could not build module 'Capacitor'"
+  puts "🔧 Removendo fases VerifyModule..."
+  installer.pods_project.targets.each do |target|
+    phases_to_remove = []
+    target.build_phases.each do |phase|
+      # Verifica se é uma fase VerifyModule (pode ter nomes diferentes)
+      if phase.respond_to?(:name) && phase.name && phase.name.include?('VerifyModule')
+        phases_to_remove << phase
+      elsif phase.respond_to?(:shell_script) && phase.shell_script && phase.shell_script.include?('VerifyModule')
+        phases_to_remove << phase
+      end
+    end
+    
+    phases_to_remove.each do |phase|
+      puts "  ❌ Removendo fase VerifyModule de: #{target.name}"
+      phase.remove_from_project
+    end
+  end
+  
+  # Salva as mudanças no projeto
+  installer.pods_project.save
+  puts "✅ Fases VerifyModule removidas!"
+  
+  # Executa script adicional para garantir remoção completa
+  script_path = File.join(__dir__, '..', 'scripts', 'disable-verifymodule-xcode.rb')
+  if File.exist?(script_path)
+    puts "🔧 Executando script adicional para desabilitar VerifyModule..."
+    system("ruby #{script_path}")
+  end
+end

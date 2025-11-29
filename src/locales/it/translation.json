@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "ChefIApp",
+    "tagline": "Gestione del Team e delle Prestazioni per l'Ospitalità"
+  },
+  "auth": {
+    "welcome": "Benvenuto su ChefIApp",
+    "signIn": "Accedi con Google",
+    "signOut": "Esci",
+    "loading": "Caricamento..."
+  },
+  "navigation": {
+    "home": "Home",
+    "tasks": "Compiti",
+    "team": "Team",
+    "rankings": "Classifiche",
+    "profile": "Profilo",
+    "settings": "Impostazioni"
+  },
+  "tasks": {
+    "title": "Compiti",
+    "myTasks": "I Miei Compiti",
+    "pending": "In sospeso",
+    "completed": "Completati",
+    "add": "Aggiungi Compito",
+    "edit": "Modifica Compito",
+    "delete": "Elimina Compito",
+    "assign": "Assegna",
+    "priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Bassa"
+    }
+  },
+  "team": {
+    "title": "Team",
+    "members": "Membri",
+    "departments": "Dipartimenti",
+    "add": "Aggiungi Membro",
+    "edit": "Modifica Membro"
+  },
+  "rankings": {
+    "title": "Classifiche",
+    "top": "Migliori Prestazioni",
+    "xp": "XP",
+    "level": "Livello",
+    "achievements": "Risultati"
+  },
+  "profile": {
+    "title": "Profilo",
+    "edit": "Modifica Profilo",
+    "name": "Nome",
+    "email": "Email",
+    "department": "Dipartimento",
+    "position": "Posizione",
+    "since": "Dal"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "notifications": "Notifiche",
+    "privacy": "Privacy",
+    "terms": "Termini di Utilizzo",
+    "about": "Informazioni",
+    "version": "Versione"
+  },
+  "legal": {
+    "privacy": "Informativa sulla Privacy",
+    "terms": "Termini di Servizio",
+    "gdpr": "Conformità GDPR",
+    "ccpa": "Conformità CCPA"
+  },
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "yes": "Sì",
+    "no": "No",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo"
+  }
+}

@@ -1,0 +1,6 @@
+/* English Localization */
+"CFBundleDisplayName" = "ChefIApp";
+"CFBundleName" = "ChefIApp";
+"NSCameraUsageDescription" = "To add profile photo";
+"NSPhotoLibraryUsageDescription" = "To select profile photo";
+"NSLocationWhenInUseUsageDescription" = "To show nearby locations";

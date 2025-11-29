@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "ChefIApp",
+    "tagline": "Team and Performance Management for Hospitality"
+  },
+  "auth": {
+    "welcome": "Welcome to ChefIApp",
+    "signIn": "Sign in with Google",
+    "signOut": "Sign out",
+    "loading": "Loading..."
+  },
+  "navigation": {
+    "home": "Home",
+    "tasks": "Tasks",
+    "team": "Team",
+    "rankings": "Rankings",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "myTasks": "My Tasks",
+    "pending": "Pending",
+    "completed": "Completed",
+    "add": "Add Task",
+    "edit": "Edit Task",
+    "delete": "Delete Task",
+    "assign": "Assign",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "team": {
+    "title": "Team",
+    "members": "Members",
+    "departments": "Departments",
+    "add": "Add Member",
+    "edit": "Edit Member"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "top": "Top Performers",
+    "xp": "XP",
+    "level": "Level",
+    "achievements": "Achievements"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit Profile",
+    "name": "Name",
+    "email": "Email",
+    "department": "Department",
+    "position": "Position",
+    "since": "Since"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "terms": "Terms of Service",
+    "about": "About",
+    "version": "Version"
+  },
+  "legal": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "gdpr": "GDPR Compliance",
+    "ccpa": "CCPA Compliance"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}

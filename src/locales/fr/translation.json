@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "ChefIApp",
+    "tagline": "Gestion d'Équipe et Performance pour l'Hôtellerie"
+  },
+  "auth": {
+    "welcome": "Bienvenue sur ChefIApp",
+    "signIn": "Se connecter avec Google",
+    "signOut": "Se déconnecter",
+    "loading": "Chargement..."
+  },
+  "navigation": {
+    "home": "Accueil",
+    "tasks": "Tâches",
+    "team": "Équipe",
+    "rankings": "Classements",
+    "profile": "Profil",
+    "settings": "Paramètres"
+  },
+  "tasks": {
+    "title": "Tâches",
+    "myTasks": "Mes Tâches",
+    "pending": "En attente",
+    "completed": "Terminées",
+    "add": "Ajouter une Tâche",
+    "edit": "Modifier la Tâche",
+    "delete": "Supprimer la Tâche",
+    "assign": "Assigner",
+    "priority": {
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse"
+    }
+  },
+  "team": {
+    "title": "Équipe",
+    "members": "Membres",
+    "departments": "Départements",
+    "add": "Ajouter un Membre",
+    "edit": "Modifier le Membre"
+  },
+  "rankings": {
+    "title": "Classements",
+    "top": "Meilleurs Performeurs",
+    "xp": "XP",
+    "level": "Niveau",
+    "achievements": "Réalisations"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Modifier le Profil",
+    "name": "Nom",
+    "email": "Email",
+    "department": "Département",
+    "position": "Poste",
+    "since": "Depuis"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "about": "À propos",
+    "version": "Version"
+  },
+  "legal": {
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions de Service",
+    "gdpr": "Conformité RGPD",
+    "ccpa": "Conformité CCPA"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  }
+}

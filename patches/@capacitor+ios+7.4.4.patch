@@ -1,0 +1,93 @@
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgedJSTypes.h b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgedJSTypes.h
+index 2a2b2b3..f4f9d1c 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgedJSTypes.h
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgedJSTypes.h
+@@
+-#import <Foundation/Foundation.h>
+-#import <Capacitor/Capacitor-Swift.h>
++#import <Foundation/Foundation.h>
++#import <Capacitor/CAPPluginCall.h>
++#import <Capacitor/Capacitor-Swift.h>
+ 
+ @protocol BridgedJSValueContainerImplementation <NSObject>
+ @required
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.m b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.m
+index 0c2a3f6..b0c35e5 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.m
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.m
+@@
+-#import "CAPInstanceConfiguration.h"
+-#import <Capacitor/Capacitor-Swift.h>
++#import "CAPInstanceConfiguration.h"
++#import <Capacitor/CAPInstanceDescriptor.h>
++#import <Capacitor/Capacitor-Swift.h>
+ 
+ @interface CAPInstanceConfiguration (Internal)
+ - (instancetype)initWithConfiguration:(CAPInstanceConfiguration*)configuration andLocation:(NSURL*)location;
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPPlugin.m b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPPlugin.m
+index e9708c9..14845b3 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPPlugin.m
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPPlugin.m
+@@
+-#import "CAPPlugin.h"
+-#import "CAPBridgedJSTypes.h"
+-#import <Capacitor/Capacitor-Swift.h>
+-#import <Foundation/Foundation.h>
++#import "CAPPlugin.h"
++#import "CAPBridgedJSTypes.h"
++#import <Capacitor/CAPInstanceConfiguration.h>
++#import <Capacitor/Capacitor-Swift.h>
++#import <Foundation/Foundation.h>
+ 
+ @implementation CAPPlugin
+ 
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/WKWebView+Capacitor.m b/node_modules/@capacitor/ios/Capacitor/Capacitor/WKWebView+Capacitor.m
+index 8f3e29b..008e4f7 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/WKWebView+Capacitor.m
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/WKWebView+Capacitor.m
+@@
+-#import <objc/runtime.h>
+-#import <Capacitor/Capacitor-Swift.h>
++#import <WebKit/WebKit.h>
++#import <objc/runtime.h>
++#import <Capacitor/Capacitor-Swift.h>
+ 
+ // Swift extensions marked as @objc and internal are available to the runtime but won't be found at compile time
+ // so we need this declaration to avoid compiler complaints.
+ @interface WKWebView (InternalSwiftExtension)
+ + (void)_swizzleKeyboardMethods;
+ @end
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.h b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.h
+index 0eeaefe..d5a2e1d 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.h
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceConfiguration.h
+@@
+-@import UIKit;
++#import <UIKit/UIKit.h>
+ 
+ @class CAPInstanceDescriptor;
+ 
+ NS_SWIFT_NAME(InstanceConfiguration)
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceDescriptor.h b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceDescriptor.h
+index 76dbaf2..b6b0e67 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceDescriptor.h
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPInstanceDescriptor.h
+@@
+-#import <UIKit/UIKit.h>
++#import <UIKit/UIKit.h>
++@class CDVConfigParser;
+@@
+-@property (nonatomic, copy, nonnull) CDVConfigParser *cordovaConfiguration;
++@property (nonatomic, strong, nonnull) CDVConfigParser *cordovaConfiguration;
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgeViewController+CDVScreenOrientationDelegate.h b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgeViewController+CDVScreenOrientationDelegate.h
+index 2f1d9f0..9e7094a 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgeViewController+CDVScreenOrientationDelegate.h
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/CAPBridgeViewController+CDVScreenOrientationDelegate.h
+@@
+-#import <Capacitor/Capacitor-Swift.h>
++#import <Capacitor/Capacitor-Swift.h>
++#import <Cordova/CDVScreenOrientationDelegate.h>
+ 
+ @interface CAPBridgeViewController (CDVScreenOrientationDelegate) <CDVScreenOrientationDelegate>
+ 
+ @end

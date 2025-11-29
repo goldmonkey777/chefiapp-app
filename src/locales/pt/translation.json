@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "ChefIApp",
+    "tagline": "Gestão de Equipe e Performance para Hotelaria"
+  },
+  "auth": {
+    "welcome": "Bem-vindo ao ChefIApp",
+    "signIn": "Entrar com Google",
+    "signOut": "Sair",
+    "loading": "Carregando..."
+  },
+  "navigation": {
+    "home": "Início",
+    "tasks": "Tarefas",
+    "team": "Equipe",
+    "rankings": "Rankings",
+    "profile": "Perfil",
+    "settings": "Configurações"
+  },
+  "tasks": {
+    "title": "Tarefas",
+    "myTasks": "Minhas Tarefas",
+    "pending": "Pendentes",
+    "completed": "Concluídas",
+    "add": "Adicionar Tarefa",
+    "edit": "Editar Tarefa",
+    "delete": "Eliminar Tarefa",
+    "assign": "Atribuir",
+    "priority": {
+      "high": "Alta",
+      "medium": "Média",
+      "low": "Baixa"
+    }
+  },
+  "team": {
+    "title": "Equipe",
+    "members": "Membros",
+    "departments": "Departamentos",
+    "add": "Adicionar Membro",
+    "edit": "Editar Membro"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "top": "Top Performers",
+    "xp": "XP",
+    "level": "Nível",
+    "achievements": "Conquistas"
+  },
+  "profile": {
+    "title": "Perfil",
+    "edit": "Editar Perfil",
+    "name": "Nome",
+    "email": "Email",
+    "department": "Departamento",
+    "position": "Cargo",
+    "since": "Desde"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "notifications": "Notificações",
+    "privacy": "Privacidade",
+    "terms": "Termos de Uso",
+    "about": "Sobre",
+    "version": "Versão"
+  },
+  "legal": {
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso",
+    "gdpr": "Conformidade RGPD",
+    "ccpa": "Conformidade CCPA"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "yes": "Sim",
+    "no": "Não",
+    "loading": "A carregar...",
+    "error": "Erro",
+    "success": "Sucesso"
+  }
+}

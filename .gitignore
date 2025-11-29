@@ -1,0 +1,42 @@
+# Node/JS
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+.parcel-cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.*.prod
+.env.*.dev
+!.env.example
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Capacitor / iOS
+ios/Pods/
+ios/App/Pods/
+ios/App/App/public/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/DerivedData/
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+
+# Misc
+tmp/

@@ -1,0 +1,9 @@
+{
+  "name": "ChefIApp - Hospitality Intelligence",
+  "description": "Transform your daily work into achievements. Track progress, manage shifts, and excel in hospitality service with AI-powered intelligence.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
