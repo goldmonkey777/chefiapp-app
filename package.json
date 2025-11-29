@@ -3,6 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "description": "Plataforma de gestão de equipe e performance para hotelaria.",
+  "author": "goldmonkey.studio",
+  "homepage": "https://github.com/goldmonkey777/chefiapp-hospitality-intelligence",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goldmonkey777/chefiapp-hospitality-intelligence.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

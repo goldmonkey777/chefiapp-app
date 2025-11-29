@@ -5,6 +5,8 @@
   
   **Modern team management platform for hospitality with gamification, real-time tracking, and intelligent performance insights.**
   
+  Made with ❤️ by [goldmonkey.studio](https://goldmonkey.studio)
+  
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
   [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
   [![Capacitor](https://img.shields.io/badge/Capacitor-7-119eff.svg)](https://capacitorjs.com/)
@@ -447,7 +449,9 @@ See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Built with ❤️ for the hospitality industry**
+**Made with ❤️ by [goldmonkey.studio](https://goldmonkey.studio)**
+
+Built for the hospitality industry
 
 [Website](https://chefiapp.com) • [Documentation](docs/README.md) • [Issues](https://github.com/goldmonkey777/chefiapp-hospitality-intelligence/issues)
 
