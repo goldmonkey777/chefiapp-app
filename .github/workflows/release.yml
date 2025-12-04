@@ -1,0 +1,89 @@
+# ========================================
+# ChefIApp™ - Release Workflow
+# ========================================
+# Automatically creates releases when tags are pushed
+
+name: 🚀 Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: 📦 Create Release
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: 📦 Install dependencies
+      run: npm ci
+
+    - name: 🏗️ Build application
+      run: npm run build
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        VITE_APP_ENV: production
+
+    - name: 📝 Generate Changelog
+      id: changelog
+      run: |
+        # Get previous tag
+        PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        
+        # Generate changelog
+        if [ -n "$PREV_TAG" ]; then
+          echo "## What's Changed" > CHANGELOG_RELEASE.md
+          echo "" >> CHANGELOG_RELEASE.md
+          git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" >> CHANGELOG_RELEASE.md
+        else
+          echo "## Initial Release" > CHANGELOG_RELEASE.md
+          echo "" >> CHANGELOG_RELEASE.md
+          echo "First release of ChefIApp!" >> CHANGELOG_RELEASE.md
+        fi
+        
+        echo "" >> CHANGELOG_RELEASE.md
+        echo "---" >> CHANGELOG_RELEASE.md
+        echo "Made with ❤️ by [goldmonkey.studio](https://goldmonkey.studio)" >> CHANGELOG_RELEASE.md
+
+    - name: 📦 Create ZIP artifact
+      run: |
+        cd dist
+        zip -r ../chefiapp-${{ github.ref_name }}.zip .
+
+    - name: 🚀 Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: CHANGELOG_RELEASE.md
+        files: |
+          chefiapp-${{ github.ref_name }}.zip
+        draft: false
+        prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 📊 Release Summary
+      run: |
+        echo "## 🚀 Release ${{ github.ref_name }} Created!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- chefiapp-${{ github.ref_name }}.zip" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "---" >> $GITHUB_STEP_SUMMARY
+        echo "Made with ❤️ by goldmonkey.studio" >> $GITHUB_STEP_SUMMARY
+

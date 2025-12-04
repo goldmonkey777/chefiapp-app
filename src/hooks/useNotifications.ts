@@ -26,6 +26,7 @@ export function useNotifications(userId: string): UseNotificationsReturn {
     markNotificationAsRead,
     markAllNotificationsAsRead,
     removeNotification,
+    syncNotifications: storeSyncNotifications,
   } = useAppStore();
 
   const notifications = allNotifications.filter(n => n.userId === userId);
@@ -36,16 +37,7 @@ export function useNotifications(userId: string): UseNotificationsReturn {
   const syncNotifications = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // TODO: Update Zustand store with Supabase data
-      // This requires adding a setNotifications action to useAppStore
+      await storeSyncNotifications(userId);
     } catch (err) {
       console.error('Error syncing notifications:', err);
     } finally {

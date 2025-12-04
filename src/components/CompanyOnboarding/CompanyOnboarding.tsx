@@ -301,8 +301,16 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({
         await supabase.auth.getUser();
       }
 
-      // Gerar QR Code da empresa (será feito pelo backend ou componente separado)
-      // TODO: Implementar geração de QR code
+      // Generate QR code URL for the company
+      // Format: com-chefiapp-app://join/{companyId}
+      // The QR code is generated dynamically from the company ID
+      // and can be accessed via the QRCodeGenerator component
+      const qrCodeUrl = `com-chefiapp-app://join/${company.id}`;
+
+      if (debug) {
+        console.log(`✅ QR Code generated for company ${company.id}: ${qrCodeUrl}`);
+        console.log('   The QR code can be accessed in the Owner Dashboard via the QRCodeGenerator component');
+      }
 
       // Instalar preset de tarefas (se não for custom)
       if (data.preset && data.preset !== 'custom') {

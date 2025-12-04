@@ -95,7 +95,8 @@ body {
 }
 
 .animate-fade-in {
-    animation: fade-in 0.5s ease-out;
+    animation: fade-in 0.2s ease-in-out;
+    will-change: opacity, transform;
 }
 
 .animate-float {
@@ -127,4 +128,24 @@ button:active {
 
 .animate-spin {
     animation: spin 1s linear infinite;
+}
+
+/* Performance optimizations */
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+/* Optimize rendering */
+.optimize-rendering {
+    contain: layout style paint;
+    content-visibility: auto;
+}
+
+/* Remove tap highlight on mobile */
+* {
+    -webkit-tap-highlight-color: transparent;
 }

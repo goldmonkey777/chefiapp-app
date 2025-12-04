@@ -1,0 +1,67 @@
+# ========================================
+# ChefIApp™ - EditorConfig
+# ========================================
+# Helps maintain consistent coding styles
+# https://editorconfig.org
+
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# JavaScript/TypeScript
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+quote_type = single
+
+# JSON
+[*.json]
+indent_size = 2
+
+# YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# Shell scripts
+[*.sh]
+indent_size = 4
+shell_variant = bash
+
+# Makefiles
+[Makefile]
+indent_style = tab
+
+# HTML/CSS
+[*.{html,css,scss}]
+indent_size = 2
+
+# Ruby (Podfile)
+[Podfile]
+indent_size = 2
+
+# XML/Plist
+[*.{xml,plist}]
+indent_size = 4
+
+# Swift
+[*.swift]
+indent_size = 4
+
+# Kotlin
+[*.kt]
+indent_size = 4
+
+# Java
+[*.java]
+indent_size = 4
+

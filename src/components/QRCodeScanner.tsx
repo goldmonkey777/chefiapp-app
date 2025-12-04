@@ -17,6 +17,9 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScanSuccess, onC
     const [success, setSuccess] = useState(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const [cameraPermission, setCameraPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+    const [showManualInput, setShowManualInput] = useState(false);
+    const [manualCode, setManualCode] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
         // Cleanup on unmount
@@ -127,8 +130,32 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScanSuccess, onC
     };
 
     const handleManualInput = () => {
-        // TODO: Implement manual company code input
-        setError('Entrada manual ainda não implementada. Use o scanner de QR code.');
+        setError(null);
+        setShowManualInput(true);
+    };
+
+    const handleManualSubmit = async () => {
+        if (!manualCode.trim()) {
+            setError('Por favor, digite o código da empresa.');
+            return;
+        }
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            await processQRCode(manualCode.trim());
+        } catch (err) {
+            setError('Erro ao processar código. Tente novamente.');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleManualCancel = () => {
+        setShowManualInput(false);
+        setManualCode('');
+        setError(null);
     };
 
     return (
@@ -232,13 +259,55 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScanSuccess, onC
                         )}
 
                         {/* Manual Input Option */}
-                        <button
-                            onClick={handleManualInput}
-                            className="w-full bg-white/10 text-white font-semibold py-3 rounded-xl hover:bg-white/20 transition text-sm"
-                        >
-                            Ou digite o código manualmente
-                        </button>
+                        {!showManualInput && (
+                            <button
+                                onClick={handleManualInput}
+                                className="w-full bg-white/10 text-white font-semibold py-3 rounded-xl hover:bg-white/20 transition text-sm"
+                            >
+                                Ou digite o código manualmente
+                            </button>
+                        )}
                     </div>
+
+                    {/* Manual Input Modal */}
+                    {showManualInput && (
+                        <div className="bg-white/10 rounded-xl p-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-white mb-2">
+                                    Código da Empresa
+                                </label>
+                                <input
+                                    type="text"
+                                    value={manualCode}
+                                    onChange={(e) => setManualCode(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleManualSubmit()}
+                                    placeholder="Digite o código ou ID da empresa"
+                                    className="w-full px-4 py-3 bg-white/20 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-white focus:outline-none"
+                                    autoFocus
+                                    disabled={isProcessing}
+                                />
+                                <p className="text-xs text-blue-100 mt-2">
+                                    Exemplo: 123e4567-e89b-12d3-a456-426614174000
+                                </p>
+                            </div>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleManualCancel}
+                                    className="flex-1 bg-white/10 text-white font-semibold py-3 rounded-xl hover:bg-white/20 transition"
+                                    disabled={isProcessing}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleManualSubmit}
+                                    className="flex-1 bg-white text-blue-600 font-bold py-3 rounded-xl hover:bg-blue-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={isProcessing || !manualCode.trim()}
+                                >
+                                    {isProcessing ? 'Verificando...' : 'Confirmar'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

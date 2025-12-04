@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefIApp™ - Hospitality Intelligence Platform</title>
+    <meta name="description" content="Revolucione a gestão de equipes na hotelaria com gamificação, tracking em tempo real e inteligência artificial. O futuro da gestão hoteleira está aqui.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chefiapp.com/">
+    <meta property="og:title" content="ChefIApp™ - Hospitality Intelligence Platform">
+    <meta property="og:description" content="Revolucione a gestão de equipes na hotelaria com gamificação, tracking em tempo real e inteligência artificial.">
+    <meta property="og:image" content="https://chefiapp.com/chefiapp-logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://chefiapp.com/">
+    <meta property="twitter:title" content="ChefIApp™ - Hospitality Intelligence Platform">
+    <meta property="twitter:description" content="Revolucione a gestão de equipes na hotelaria com gamificação, tracking em tempo real e inteligência artificial.">
+    <meta property="twitter:image" content="https://chefiapp.com/chefiapp-logo.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 8rem 2rem 6rem;
+            text-align: center;
+            margin-top: 70px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Features Section */
+        .features {
+            background: var(--light);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: white;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .step p {
+            color: var(--gray);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .stat {
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Pricing */
+        .pricing {
+            background: var(--light);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.08) translateY(-5px);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-period {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .plan-features li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .pricing-card.featured .plan-features li {
+            border-bottom-color: rgba(255,255,255,0.2);
+        }
+
+        .plan-features li::before {
+            content: "✓ ";
+            color: var(--primary);
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .pricing-card.featured .plan-features li::before {
+            color: var(--accent);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: white;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial {
+            background: var(--light);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .author-info h4 {
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .author-info p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 2rem;
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-section p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                🍳 ChefIApp™
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">Como Funciona</a></li>
+                <li><a href="#pricing">Preços</a></li>
+                <li><a href="#testimonials">Depoimentos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>O Futuro da Gestão Hoteleira</h1>
+        <p>Revolucione sua equipe com gamificação, IA e tracking em tempo real</p>
+        <div class="cta-buttons">
+            <a href="/app" class="btn btn-primary">🚀 Experimente Grátis</a>
+            <a href="#how-it-works" class="btn btn-secondary">📖 Saiba Mais</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Por Que ChefIApp?</h2>
+            <p class="section-subtitle">Tudo que você precisa para gerenciar sua equipe de forma inteligente</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Gamificação Avançada</h3>
+                    <p>Sistema completo de XP, níveis, achievements e leaderboards que transforma o trabalho diário em uma experiência engajadora. Seus funcionários vão amar competir de forma saudável!</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>Check-in/Check-out Inteligente</h3>
+                    <p>Tracking automático de turnos com GPS, histórico completo e streaks de dias consecutivos. Saiba exatamente quem está trabalhando e quando, em tempo real.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Gestão de Tarefas</h3>
+                    <p>Crie, atribua e acompanhe tarefas com prioridades, timers em tempo real e fotos de conclusão. Nunca mais perca controle do que precisa ser feito.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Assistente com IA</h3>
+                    <p>ChatBot integrado com Google Gemini que responde perguntas, ajuda com tarefas e aprende com seu negócio. É como ter um gerente virtual 24/7.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics em Tempo Real</h3>
+                    <p>Dashboards personalizados para cada tipo de usuário (Owner, Manager, Employee) com métricas que realmente importam para seu negócio.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Multilíngue</h3>
+                    <p>Suporte completo para 6+ idiomas (Português, Inglês, Espanhol, Francês, Alemão, Mandarim). Perfeito para equipes internacionais.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile First</h3>
+                    <p>Apps nativos para iOS e Android com design moderno e intuitivo. Funciona offline e sincroniza quando a conexão volta.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Segurança Avançada</h3>
+                    <p>OAuth com Google e Apple, Row Level Security, criptografia end-to-end e conformidade com LGPD. Seus dados sempre protegidos.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Performance Extrema</h3>
+                    <p>Construído com React 19, TypeScript e Supabase. Carregamento instantâneo e sincronização em tempo real via WebSockets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Como Funciona?</h2>
+            <p class="section-subtitle">Comece em 5 minutos. É sério!</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Crie Sua Empresa</h3>
+                    <p>Cadastre-se gratuitamente via Google, Apple ou Email. Configure o nome, logo e setores da sua empresa em segundos.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Adicione Sua Equipe</h3>
+                    <p>Gere QR Codes ou códigos de convite. Seus funcionários escaneiam e entram na empresa instantaneamente, sem complicação.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Crie Tarefas</h3>
+                    <p>Atribua tarefas para setores ou pessoas específicas. Defina prioridades, prazos e acompanhe o progresso em tempo real.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Veja a Mágica Acontecer</h3>
+                    <p>Acompanhe produtividade, XP, rankings e métricas em tempo real. Sua equipe fica mais engajada e eficiente automaticamente!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title">ChefIApp em Números</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-number">45%</div>
+                    <div class="stat-label">Aumento de Produtividade</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">87%</div>
+                    <div class="stat-label">Satisfação da Equipe</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5min</div>
+                    <div class="stat-label">Setup Completo</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Suporte e Monitoramento</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Planos Para Cada Tamanho</h2>
+            <p class="section-subtitle">Teste grátis por 14 dias. Sem cartão de crédito.</p>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="plan-name">Starter</div>
+                    <div class="plan-price">R$49</div>
+                    <div class="plan-period">por mês</div>
+                    <ul class="plan-features">
+                        <li>Até 10 funcionários</li>
+                        <li>Tarefas ilimitadas</li>
+                        <li>Check-in/Check-out</li>
+                        <li>Gamificação básica</li>
+                        <li>1 setor</li>
+                        <li>Suporte por email</li>
+                    </ul>
+                    <a href="/app" class="btn btn-primary">Começar Agora</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="plan-name">Professional ⭐</div>
+                    <div class="plan-price">R$149</div>
+                    <div class="plan-period">por mês</div>
+                    <ul class="plan-features">
+                        <li>Até 50 funcionários</li>
+                        <li>Tarefas ilimitadas</li>
+                        <li>Check-in/Check-out avançado</li>
+                        <li>Gamificação completa</li>
+                        <li>Setores ilimitados</li>
+                        <li>Assistente com IA</li>
+                        <li>Analytics avançado</li>
+                        <li>Suporte prioritário</li>
+                    </ul>
+                    <a href="/app" class="btn btn-primary">Mais Popular</a>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="plan-name">Enterprise</div>
+                    <div class="plan-price">Custom</div>
+                    <div class="plan-period">sob demanda</div>
+                    <ul class="plan-features">
+                        <li>Funcionários ilimitados</li>
+                        <li>Tudo do Professional</li>
+                        <li>White-label</li>
+                        <li>API customizada</li>
+                        <li>Integrações sob medida</li>
+                        <li>Treinamento dedicado</li>
+                        <li>SLA garantido</li>
+                        <li>Account manager</li>
+                    </ul>
+                    <a href="mailto:contact@chefiapp.com" class="btn btn-primary">Fale Conosco</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
+            <p class="section-subtitle">Junte-se a centenas de hotéis que já transformaram suas operações</p>
+
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <p class="testimonial-text">"O ChefIApp revolucionou como gerenciamos nossa equipe. A gamificação fez com que todos ficassem mais engajados e produtivos. Não consigo imaginar voltar ao papel!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MR</div>
+                        <div class="author-info">
+                            <h4>Maria Rodriguez</h4>
+                            <p>Gerente - Hotel Plaza São Paulo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <p class="testimonial-text">"Implementamos em menos de 1 hora. A equipe aprendeu a usar em minutos. Os relatórios em tempo real me dão visibilidade total das operações. Valeu cada centavo!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JS</div>
+                        <div class="author-info">
+                            <h4>João Silva</h4>
+                            <p>Owner - Pousada Beira Mar</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <p class="testimonial-text">"Como funcionária, adoro ver meu XP subindo e competir no leaderboard. Faz o trabalho ficar mais divertido e eu sei exatamente o que preciso fazer. App top!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AC</div>
+                        <div class="author-info">
+                            <h4>Ana Costa</h4>
+                            <p>Camareira - Resort Tropical</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Pronto Para Revolucionar Sua Gestão?</h2>
+        <p>Junte-se a centenas de hotéis que já transformaram suas operações</p>
+        <div class="cta-buttons">
+            <a href="/app" class="btn btn-primary">🚀 Começar Gratuitamente</a>
+            <a href="https://calendly.com/chefiapp" class="btn btn-secondary">📅 Agendar Demo</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ChefIApp™</h3>
+                <p>Hospitality Intelligence Platform</p>
+                <p style="margin-top: 1rem; opacity: 0.8;">Revolucionando a gestão hoteleira com tecnologia de ponta.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Produto</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Preços</a></li>
+                    <li><a href="/app">Login</a></li>
+                    <li><a href="https://docs.chefiapp.com">Documentação</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Empresa</h3>
+                <ul>
+                    <li><a href="/about">Sobre Nós</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/careers">Carreiras</a></li>
+                    <li><a href="/contact">Contato</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Suporte</h3>
+                <ul>
+                    <li><a href="https://help.chefiapp.com">Central de Ajuda</a></li>
+                    <li><a href="/privacy">Privacidade</a></li>
+                    <li><a href="/terms">Termos de Uso</a></li>
+                    <li><a href="mailto:support@chefiapp.com">Email</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 ChefIApp™ - Hospitality Intelligence Platform. Todos os direitos reservados.</p>
+            <p style="margin-top: 0.5rem;">Desenvolvido com ❤️ por <a href="https://goldmonkey.studio" style="color: var(--accent);">goldmonkey.studio</a></p>
+        </div>
+    </footer>
+</body>
+</html>

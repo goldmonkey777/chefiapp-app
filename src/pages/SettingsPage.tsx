@@ -16,12 +16,21 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-24 pt-safe">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 safe-area-top">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.history.back()}
+            className="p-1 hover:bg-white/20 rounded-full transition-colors"
+            aria-label="Voltar"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
           <Settings className="w-6 h-6" />
-          <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
+          <h1 className="text-2xl font-bold">{t('settings.title') || 'Configurações'}</h1>
         </div>
       </div>
 
@@ -36,16 +45,21 @@ export const SettingsPage: React.FC = () => {
           </div>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-gray-500">{t('profile.name')}</label>
-              <p className="text-sm font-medium text-gray-900">{user?.full_name || 'N/A'}</p>
+              <label className="text-xs text-gray-500">{t('profile.name') || 'Nome'}</label>
+              <p className="text-sm font-medium text-gray-900">{user?.name || 'N/A'}</p>
             </div>
             <div>
-              <label className="text-xs text-gray-500">{t('profile.email')}</label>
+              <label className="text-xs text-gray-500">{t('profile.email') || 'Email'}</label>
               <p className="text-sm font-medium text-gray-900">{user?.email || 'N/A'}</p>
             </div>
             <div>
-              <label className="text-xs text-gray-500">{t('profile.position')}</label>
-              <p className="text-sm font-medium text-gray-900">{user?.role || 'N/A'}</p>
+              <label className="text-xs text-gray-500">{t('profile.position') || 'Cargo'}</label>
+              <p className="text-sm font-medium text-gray-900">
+                {user?.role === 'employee' && 'Funcionário'}
+                {user?.role === 'manager' && 'Gerente'}
+                {user?.role === 'owner' && 'Dono'}
+                {!user?.role && 'N/A'}
+              </p>
             </div>
           </div>
         </div>

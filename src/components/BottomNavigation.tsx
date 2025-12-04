@@ -2,9 +2,9 @@
 // Navegação inferior para mobile
 
 import React from 'react';
-import { Home, ListChecks, Trophy, Award, User, Calendar } from 'lucide-react';
+import { Home, ListChecks, Trophy, Award, User, Calendar, Settings } from 'lucide-react';
 
-export type NavigationView = 'dashboard' | 'tasks' | 'schedule' | 'leaderboard' | 'achievements' | 'profile';
+export type NavigationView = 'dashboard' | 'tasks' | 'schedule' | 'leaderboard' | 'achievements' | 'profile' | 'settings';
 
 interface BottomNavigationProps {
   currentView: NavigationView;
@@ -12,7 +12,7 @@ interface BottomNavigationProps {
   unreadNotifications?: number;
 }
 
-export const BottomNavigation: React.FC<BottomNavigationProps> = ({
+export const BottomNavigation: React.FC<BottomNavigationProps> = React.memo(({
   currentView,
   onNavigate,
   unreadNotifications = 0,
@@ -48,6 +48,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       label: 'Perfil',
       icon: User,
       badge: unreadNotifications,
+    },
+    {
+      id: 'settings' as NavigationView,
+      label: 'Config',
+      icon: Settings,
     },
   ];
 
@@ -110,6 +115,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       </div>
     </nav>
   );
-};
+});
+
+BottomNavigation.displayName = 'BottomNavigation';
 
 export default BottomNavigation;

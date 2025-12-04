@@ -61,8 +61,12 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({ onComp
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
             {/* ✅ MELHORIA: Mostrar nome do usuário */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mx-auto flex items-center justify-center mb-4">
-                <span className="text-3xl">👋</span>
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg overflow-hidden">
+                <img
+                  src="/chefiapp-logo.png"
+                  alt="ChefIApp logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Bem-vindo{userData?.name ? `, ${userData.name.split(' ')[0]}` : ''}!

@@ -1,27 +1,46 @@
 // ChefIApp™ - Employee Dashboard
-// Dashboard completo do funcionário com todos os componentes
+// Dashboard completo do funcionário com todos os componentes (Optimized)
 
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense, useMemo, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useTasks } from '../hooks/useTasks';
 import { useNotifications } from '../hooks/useNotifications';
 import { useCheckin } from '../hooks/useCheckin';
+import { Settings } from 'lucide-react';
 
-// Componentes UI
+// Componentes UI (importação direta para componentes leves)
 import { CheckInCard } from '../components/CheckInCard';
 import { XPProgress } from '../components/XPProgress';
 import { StreakBadge } from '../components/StreakBadge';
 import { TaskCard } from '../components/TaskCard';
-import { Leaderboard } from '../components/Leaderboard';
-import { AchievementGrid } from '../components/AchievementGrid';
 import { NotificationBell } from '../components/NotificationBell';
 import { BottomNavigation, NavigationView } from '../components/BottomNavigation';
 
+// Lazy loading para componentes pesados
+const Leaderboard = lazy(() => import('../components/Leaderboard'));
+const AchievementGrid = lazy(() => import('../components/AchievementGrid'));
+const SettingsPage = lazy(() => import('./SettingsPage'));
+
 import { getGreeting } from '../lib/utils';
 
-export const EmployeeDashboard: React.FC = () => {
+// Loading placeholder para lazy components
+const LoadingPlaceholder: React.FC<{ message?: string }> = ({ message = 'Carregando...' }) => (
+  <div className="flex items-center justify-center py-12">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent mx-auto mb-2"></div>
+      <p className="text-gray-500 text-sm">{message}</p>
+    </div>
+  </div>
+);
+
+const EmployeeDashboard: React.FC = React.memo(() => {
   const { user } = useAuth();
   const [currentView, setCurrentView] = useState<NavigationView>('dashboard');
+
+  // Memoizar função de navegação para evitar re-renders
+  const handleNavigate = useCallback((view: NavigationView) => {
+    setCurrentView(view);
+  }, []);
 
   if (!user) return null;
 
@@ -38,6 +57,9 @@ export const EmployeeDashboard: React.FC = () => {
   const { unreadCount } = useNotifications(user.id);
   const { isActive } = useCheckin(user.id);
 
+  // Memoizar greeting para evitar recálculo
+  const greeting = useMemo(() => getGreeting(), []);
+
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
@@ -47,11 +69,21 @@ export const EmployeeDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {getGreeting()}, {user.name}! 👋
+                  {greeting}, {user.name}! 👋
                 </h1>
                 <p className="text-gray-600">Seja bem-vindo de volta</p>
               </div>
-              <NotificationBell userId={user.id} />
+              <div className="flex items-center gap-2">
+                <NotificationBell userId={user.id} />
+                <button
+                  onClick={() => setCurrentView('settings')}
+                  className="relative p-2 bg-white hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0 border border-gray-200 shadow focus-visible:outline focus-visible:ring-2 focus-visible:ring-blue-500"
+                  aria-label="Configurações"
+                  title="Configurações"
+                >
+                  <Settings className="w-6 h-6 text-gray-800" strokeWidth={2.75} />
+                </button>
+              </div>
             </div>
 
             {/* Check-in Card */}
@@ -139,12 +171,14 @@ export const EmployeeDashboard: React.FC = () => {
                       Ver Todos →
                     </button>
                   </div>
-                  <Leaderboard
-                    companyId={user.companyId}
-                    currentUserId={user.id}
-                    limit={3}
-                    showCurrentUser={false}
-                  />
+                  <Suspense fallback={<LoadingPlaceholder message="Carregando ranking..." />}>
+                    <Leaderboard
+                      companyId={user.companyId}
+                      currentUserId={user.id}
+                      limit={3}
+                      showCurrentUser={false}
+                    />
+                  </Suspense>
                 </div>
               </div>
             ) : (
@@ -211,12 +245,14 @@ export const EmployeeDashboard: React.FC = () => {
               </p>
             </div>
 
-            <Leaderboard
-              companyId={user.companyId}
-              currentUserId={user.id}
-              limit={10}
+            <Suspense fallback={<LoadingPlaceholder message="Carregando ranking..." />}>
+              <Leaderboard
+                companyId={user.companyId}
+                currentUserId={user.id}
+                limit={10}
               showCurrentUser
-            />
+              />
+            </Suspense>
           </div>
         );
 
@@ -232,7 +268,9 @@ export const EmployeeDashboard: React.FC = () => {
               </p>
             </div>
 
-            <AchievementGrid userId={user.id} />
+            <Suspense fallback={<LoadingPlaceholder message="Carregando conquistas..." />}>
+              <AchievementGrid userId={user.id} />
+            </Suspense>
           </div>
         );
 
@@ -240,7 +278,7 @@ export const EmployeeDashboard: React.FC = () => {
         return (
           <div className="space-y-6 pb-24 pt-safe">
             <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900">
                 Meu Perfil
               </h1>
             </div>
@@ -296,22 +334,35 @@ export const EmployeeDashboard: React.FC = () => {
             </div>
           </div>
         );
+
+      case 'settings':
+        return (
+          <div className="pb-24 pt-safe">
+            <Suspense fallback={<LoadingPlaceholder message="Carregando configurações..." />}>
+              <SettingsPage />
+            </Suspense>
+          </div>
+        );
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 safe-area-insets">
       <div className="max-w-full sm:max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        {renderView()}
+        <div className="animate-fade-in">
+          {renderView()}
+        </div>
       </div>
 
       <BottomNavigation
         currentView={currentView}
-        onNavigate={setCurrentView}
+        onNavigate={handleNavigate}
         unreadNotifications={unreadCount}
       />
     </div>
   );
-};
+});
+
+EmployeeDashboard.displayName = 'EmployeeDashboard';
 
 export default EmployeeDashboard;

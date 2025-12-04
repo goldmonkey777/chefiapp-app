@@ -36,6 +36,95 @@ export function useAuth(): UseAuthReturn {
     addUser,
   } = useAppStore();
 
+  // Garante que o perfil exista para o usuário autenticado
+  const ensureProfileExists = useCallback(
+    async (user: { id: string; email?: string | null; user_metadata?: any; app_metadata?: any }) => {
+      if (!user?.id) {
+        console.warn('⚠️ [ensureProfileExists] User ID não fornecido');
+        return;
+      }
+
+      console.log('🔧 [ensureProfileExists] Garantindo perfil para:', {
+        userId: user.id,
+        email: user.email,
+        provider: user.app_metadata?.provider,
+        metadata: user.user_metadata
+      });
+
+      try {
+        // Primeiro, verificar se perfil já existe
+        const { data: existingProfile, error: checkError } = await supabase
+          .from('profiles')
+          .select('id, name, email')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (checkError) {
+          console.error('❌ [ensureProfileExists] Erro ao verificar perfil:', checkError);
+        }
+
+        if (existingProfile) {
+          console.log('✅ [ensureProfileExists] Perfil já existe:', existingProfile.name);
+          return;
+        }
+
+        console.log('📝 [ensureProfileExists] Perfil não existe, criando...');
+
+        // Usa metadados para preencher campos básicos
+        const name =
+          user.user_metadata?.name ||
+          user.user_metadata?.full_name ||
+          user.email?.split('@')[0] ||
+          'Usuário';
+
+        const profileData = {
+          id: user.id,
+          name,
+          email: user.email || '',
+          role: (user.user_metadata?.role as UserRole) || UserRole.EMPLOYEE,
+          company_id: user.user_metadata?.company_id || null,
+          sector: (user.user_metadata?.sector as Sector) || null,
+          xp: 0,
+          level: 1,
+          streak: 0,
+          shift_status: 'offline',
+          profile_photo:
+            user.user_metadata?.avatar_url ||
+            user.user_metadata?.picture ||
+            '',
+          auth_method: (user.app_metadata?.provider as AuthMethod) || 'email',
+        };
+
+        console.log('💾 [ensureProfileExists] Criando perfil com dados:', {
+          name: profileData.name,
+          email: profileData.email,
+          role: profileData.role,
+          auth_method: profileData.auth_method
+        });
+
+        // Upsert de perfil (tenta inserir, se existir atualiza)
+        const { data: createdProfile, error } = await supabase
+          .from('profiles')
+          .upsert(profileData, { onConflict: 'id' })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('❌ [ensureProfileExists] Erro ao criar/atualizar perfil:', error);
+          console.error('❌ [ensureProfileExists] Código do erro:', error.code);
+          console.error('❌ [ensureProfileExists] Mensagem:', error.message);
+          throw error;
+        }
+
+        console.log('✅ [ensureProfileExists] Perfil criado com sucesso:', createdProfile);
+      } catch (err: any) {
+        console.error('❌ [ensureProfileExists] Exceção ao garantir perfil:', err);
+        throw err;
+      }
+    },
+    []
+  );
+
   // Fetch user profile from Supabase
   const fetchProfile = useCallback(async (userId: string) => {
     try {
@@ -157,24 +246,27 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     let isMounted = true;
     let timeoutId: NodeJS.Timeout;
-    
-    // Safety timeout - if loading takes more than 3 seconds, show onboarding
+
+    // Safety timeout - if loading takes more than 10 seconds, show onboarding
+    // Increased from 3s to 10s to allow OAuth profile creation time
     timeoutId = setTimeout(() => {
       if (isMounted) {
-        console.warn('Auth initialization timeout - forcing onboarding');
+        console.warn('⏱️ [useAuth] Auth initialization timeout (10s) - forcing onboarding');
         setCurrentUser(null);
         setAuthenticated(false);
         setIsLoading(false);
       }
-    }, 3000);
+    }, 10000);
     
     const initializeAuth = async () => {
       try {
+        console.log('🔑 [useAuth] Initializing auth...');
+
         // Check active session from Supabase first (most reliable)
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
+
         if (sessionError) {
-          console.error('Error getting session:', sessionError);
+          console.error('❌ [useAuth] Error getting session:', sessionError);
           if (isMounted) {
             clearTimeout(timeoutId);
             setCurrentUser(null);
@@ -185,10 +277,18 @@ export function useAuth(): UseAuthReturn {
         }
 
         if (session?.user) {
+          console.log('✅ [useAuth] Session found, fetching profile for user:', session.user.id);
+
           // We have a session, fetch profile
           await fetchProfile(session.user.id);
-          if (isMounted) clearTimeout(timeoutId);
+
+          if (isMounted) {
+            clearTimeout(timeoutId);
+            console.log('✅ [useAuth] Profile fetch completed');
+          }
         } else {
+          console.log('ℹ️ [useAuth] No session found, showing onboarding');
+
           // No session - show onboarding
           if (isMounted) {
             clearTimeout(timeoutId);
@@ -198,7 +298,7 @@ export function useAuth(): UseAuthReturn {
           }
         }
       } catch (err) {
-        console.error('Error initializing auth:', err);
+        console.error('❌ [useAuth] Error initializing auth:', err);
         if (isMounted) {
           clearTimeout(timeoutId);
           setCurrentUser(null);
@@ -287,11 +387,10 @@ export function useAuth(): UseAuthReturn {
 
       // Detect if running in Capacitor
       const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
-      // For iOS, use Supabase URL with redirect_to query parameter
-      // This forces Supabase to redirect to the deep link after processing
-      // Make sure 'com-chefiapp-app://auth/callback' is in Supabase Redirect URLs
-      const redirectUrl = isCapacitor 
-        ? 'https://mcmxniuokmvzuzqfnpnn.supabase.co/auth/v1/callback?redirect_to=com-chefiapp-app://auth/callback'
+      // ✅ CORREÇÃO: Para mobile, usar deep link direto
+      // Para web, usar callback URL do site
+      const redirectUrl = isCapacitor
+        ? 'com-chefiapp-app://auth/callback'
         : `${window.location.origin}/auth/callback`;
 
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -364,11 +463,10 @@ export function useAuth(): UseAuthReturn {
 
       // Detect if running in Capacitor
       const isCapacitor = typeof (window as any).Capacitor !== 'undefined';
-      // For iOS, use Supabase URL with redirect_to query parameter
-      // This forces Supabase to redirect to the deep link after processing
-      // Make sure 'com-chefiapp-app://auth/callback' is in Supabase Redirect URLs
-      const redirectUrl = isCapacitor 
-        ? 'https://mcmxniuokmvzuzqfnpnn.supabase.co/auth/v1/callback?redirect_to=com-chefiapp-app://auth/callback'
+      // ✅ CORREÇÃO: Para mobile, usar deep link direto
+      // Para web, usar callback URL do site
+      const redirectUrl = isCapacitor
+        ? 'com-chefiapp-app://auth/callback'
         : `${window.location.origin}/auth/callback`;
 
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -437,10 +535,17 @@ export function useAuth(): UseAuthReturn {
       setIsLoading(true);
       setError(null);
 
+      const isCapacitor =
+        typeof (window as any) !== 'undefined' &&
+        (window as any).Capacitor !== undefined;
+      const redirectUrl = isCapacitor
+        ? 'chefiapp://auth/callback'
+        : `${window.location.origin}/auth/callback`;
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectUrl,
         },
       });
 

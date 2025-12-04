@@ -288,26 +288,44 @@ ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles
-  FOR SELECT USING (auth.uid() = id);
+  FOR SELECT USING ((select auth.uid()) = id);
 
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
+  FOR UPDATE USING ((select auth.uid()) = id);
 
 DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 CREATE POLICY "Users can insert own profile" ON public.profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = id);
 
 -- Users can view profiles in their company
+-- FIX: Usar função SECURITY DEFINER para evitar recursão infinita
+CREATE OR REPLACE FUNCTION public.get_user_company_id(user_uuid UUID)
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_catalog
+STABLE
+AS $$
+DECLARE
+  result UUID;
+BEGIN
+  SELECT company_id INTO result
+  FROM public.profiles
+  WHERE id = user_uuid;
+  RETURN result;
+END;
+$$;
+
 DROP POLICY IF EXISTS "Users can view company profiles" ON public.profiles;
 CREATE POLICY "Users can view company profiles" ON public.profiles
   FOR SELECT USING (
+    -- Usuário pode ver seu próprio perfil
+    id = (select auth.uid()) OR
+    -- OU se não tem company_id (perfis sem empresa)
     company_id IS NULL OR
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-      AND p.company_id = profiles.company_id
-    )
+    -- OU se está na mesma empresa (usando função que bypassa RLS)
+    company_id = public.get_user_company_id((select auth.uid()))
   );
 
 -- ============================================================================
@@ -316,22 +334,22 @@ CREATE POLICY "Users can view company profiles" ON public.profiles
 
 DROP POLICY IF EXISTS "Owners can view own companies" ON public.companies;
 CREATE POLICY "Owners can view own companies" ON public.companies
-  FOR SELECT USING (auth.uid() = owner_id);
+  FOR SELECT USING ((select auth.uid()) = owner_id);
 
 DROP POLICY IF EXISTS "Owners can insert own companies" ON public.companies;
 CREATE POLICY "Owners can insert own companies" ON public.companies
-  FOR INSERT WITH CHECK (auth.uid() = owner_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = owner_id);
 
 DROP POLICY IF EXISTS "Owners can update own companies" ON public.companies;
 CREATE POLICY "Owners can update own companies" ON public.companies
-  FOR UPDATE USING (auth.uid() = owner_id);
+  FOR UPDATE USING ((select auth.uid()) = owner_id);
 
 DROP POLICY IF EXISTS "Employees can view their company" ON public.companies;
 CREATE POLICY "Employees can view their company" ON public.companies
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
+      WHERE profiles.id = (select auth.uid())
       AND profiles.company_id = companies.id
     )
   );
@@ -348,11 +366,11 @@ CREATE POLICY "Users can view company sectors" ON public.sectors
       SELECT 1 FROM public.companies
       WHERE companies.id = sectors.company_id
       AND (
-        companies.owner_id = auth.uid()
+        companies.owner_id = (select auth.uid())
         OR EXISTS (
           SELECT 1 FROM public.profiles
           WHERE profiles.company_id = companies.id
-          AND profiles.id = auth.uid()
+          AND profiles.id = (select auth.uid())
         )
       )
     )
@@ -364,7 +382,7 @@ CREATE POLICY "Owners can insert company sectors" ON public.sectors
     EXISTS (
       SELECT 1 FROM public.companies
       WHERE companies.id = sectors.company_id
-      AND companies.owner_id = auth.uid()
+      AND companies.owner_id = (select auth.uid())
     )
   );
 
@@ -376,11 +394,11 @@ CREATE POLICY "Users can view company positions" ON public.positions
       SELECT 1 FROM public.companies
       WHERE companies.id = positions.company_id
       AND (
-        companies.owner_id = auth.uid()
+        companies.owner_id = (select auth.uid())
         OR EXISTS (
           SELECT 1 FROM public.profiles
           WHERE profiles.company_id = companies.id
-          AND profiles.id = auth.uid()
+          AND profiles.id = (select auth.uid())
         )
       )
     )
@@ -392,7 +410,7 @@ CREATE POLICY "Owners can insert company positions" ON public.positions
     EXISTS (
       SELECT 1 FROM public.companies
       WHERE companies.id = positions.company_id
-      AND companies.owner_id = auth.uid()
+      AND companies.owner_id = (select auth.uid())
     )
   );
 
@@ -404,11 +422,11 @@ CREATE POLICY "Users can view company shifts" ON public.shifts
       SELECT 1 FROM public.companies
       WHERE companies.id = shifts.company_id
       AND (
-        companies.owner_id = auth.uid()
+        companies.owner_id = (select auth.uid())
         OR EXISTS (
           SELECT 1 FROM public.profiles
           WHERE profiles.company_id = companies.id
-          AND profiles.id = auth.uid()
+          AND profiles.id = (select auth.uid())
         )
       )
     )
@@ -420,7 +438,7 @@ CREATE POLICY "Owners can insert company shifts" ON public.shifts
     EXISTS (
       SELECT 1 FROM public.companies
       WHERE companies.id = shifts.company_id
-      AND companies.owner_id = auth.uid()
+      AND companies.owner_id = (select auth.uid())
     )
   );
 
@@ -434,7 +452,7 @@ CREATE POLICY "Users can view company tasks" ON public.tasks
     company_id IS NULL OR
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
+      WHERE profiles.id = (select auth.uid())
       AND profiles.company_id = tasks.company_id
     )
   );
@@ -449,7 +467,7 @@ CREATE POLICY "Users can update tasks" ON public.tasks
     company_id IS NULL OR
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
+      WHERE profiles.id = (select auth.uid())
       AND profiles.company_id = tasks.company_id
     )
   );
@@ -461,20 +479,20 @@ CREATE POLICY "Users can update tasks" ON public.tasks
 -- Check-ins
 DROP POLICY IF EXISTS "Users can view own checkins" ON public.check_ins;
 CREATE POLICY "Users can view own checkins" ON public.check_ins
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "Users can insert own checkins" ON public.check_ins;
 CREATE POLICY "Users can insert own checkins" ON public.check_ins
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = user_id);
 
 -- Notifications
 DROP POLICY IF EXISTS "Users can view own notifications" ON public.notifications;
 CREATE POLICY "Users can view own notifications" ON public.notifications
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "Users can update own notifications" ON public.notifications;
 CREATE POLICY "Users can update own notifications" ON public.notifications
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING ((select auth.uid()) = user_id);
 
 -- Activities
 DROP POLICY IF EXISTS "Users can view company activities" ON public.activities;
@@ -482,7 +500,7 @@ CREATE POLICY "Users can view company activities" ON public.activities
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
+      WHERE profiles.id = (select auth.uid())
       AND profiles.company_id = activities.company_id
     )
   );
@@ -499,15 +517,15 @@ CREATE POLICY "Users can view achievements" ON public.achievements
 -- User achievements (restritas ao próprio usuário)
 DROP POLICY IF EXISTS "Users can view own achievements" ON public.user_achievements;
 CREATE POLICY "Users can view own achievements" ON public.user_achievements
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "Users can insert own achievements" ON public.user_achievements;
 CREATE POLICY "Users can insert own achievements" ON public.user_achievements
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "Users can update own achievements" ON public.user_achievements;
 CREATE POLICY "Users can update own achievements" ON public.user_achievements
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING ((select auth.uid()) = user_id);
 
 -- ============================================================================
 -- 19. CRIAR FUNÇÃO PARA AUTO-CRIAR PERFIL

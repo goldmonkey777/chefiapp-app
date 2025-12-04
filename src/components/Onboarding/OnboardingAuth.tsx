@@ -60,8 +60,12 @@ export const OnboardingAuth: React.FC<OnboardingAuthProps> = ({ onComplete }) =>
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-6 safe-area-insets">
       <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 max-w-md w-full border border-white/20">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xl">
-            <span className="text-4xl">👨‍🍳</span>
+          <div className="w-20 h-20 bg-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xl overflow-hidden">
+            <img
+              src="/chefiapp-logo.png"
+              alt="ChefIApp logo"
+              className="w-full h-full object-contain"
+            />
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">ChefIApp</h2>
           <p className="text-blue-100">

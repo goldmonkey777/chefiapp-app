@@ -6,7 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https',
-    iosScheme: 'com-chefiapp-app'
+    // Usar o mesmo esquema que os deep links configurados no Supabase/Auth
+    iosScheme: 'chefiapp'
   },
   plugins: {
     SplashScreen: {

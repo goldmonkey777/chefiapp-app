@@ -13,12 +13,14 @@ import {
   UserAchievement,
   Shift,
 } from '../lib/types';
+import { supabase } from '../lib/supabase';
 
 // Import modular actions
 import { createTaskActions, TaskActions } from './actions/taskActions';
 import { createUserActions, UserActions } from './actions/userActions';
 import { createNotificationActions, NotificationActions } from './actions/notificationActions';
 import { createActivityActions, ActivityActions } from './actions/activityActions';
+import { createShiftActions, ShiftActions } from './actions/shiftActions';
 
 // ============================================
 // STATE INTERFACE
@@ -76,7 +78,8 @@ type CombinedState = AppState &
   TaskActions &
   UserActions &
   NotificationActions &
-  ActivityActions;
+  ActivityActions &
+  ShiftActions;
 
 // ============================================
 // INITIAL STATE
@@ -112,6 +115,7 @@ export const useAppStore = create<CombinedState>()(
         ...createUserActions(set, get),
         ...createNotificationActions(set, get),
         ...createActivityActions(set, get),
+        ...createShiftActions(set, get),
 
         // ========== AUTH ACTIONS ==========
         setCurrentUser: (user) => set({ currentUser: user }),
@@ -124,53 +128,110 @@ export const useAppStore = create<CombinedState>()(
         unlockAchievement: async (userId, achievementId) => {
           const { userAchievements, achievements } = get();
 
+          // 1. Check if already unlocked locally
           const alreadyUnlocked = userAchievements.some(
             ua => ua.userId === userId && ua.achievementId === achievementId
           );
 
           if (alreadyUnlocked) return;
 
+          // 2. Check if achievement exists
           const achievement = achievements.find(a => a.id === achievementId);
           if (!achievement) return;
 
-          // TODO: Save to Supabase
-          const newUserAchievement: UserAchievement = {
-            id: crypto.randomUUID(),
-            userId,
-            achievementId,
-            unlockedAt: new Date(),
-          };
+          try {
+            // 3. Persist to Supabase
+            // We use upsert to handle potential race conditions safely
+            const { data, error } = await supabase
+              .from('user_achievements')
+              .upsert(
+                {
+                  user_id: userId,
+                  achievement_id: achievementId,
+                  unlocked_at: new Date().toISOString(),
+                } as any, // Type assertion due to schema mismatch
+                { onConflict: 'user_id, achievement_id' }
+              )
+              .select()
+              .single();
 
-          set((state) => ({
-            userAchievements: [...state.userAchievements, newUserAchievement]
-          }));
+            if (error) {
+              console.error('Error unlocking achievement:', error);
+              return;
+            }
 
-          // Add XP from achievement
-          await get().addXP(userId, achievement.xp, `Conquista: ${achievement.name}`);
+            if (!data) {
+              console.error('No data returned from achievement unlock');
+              return;
+            }
 
-          // Notify user
-          await get().addNotification({
-            userId,
-            type: 'achievement' as any,
-            title: '🎉 Conquista desbloqueada!',
-            message: achievement.name,
-            read: false,
-          });
+            // 4. Update local state
+            const newUserAchievement: UserAchievement = {
+              id: (data as any).id,
+              userId: (data as any).user_id,
+              achievementId: (data as any).achievement_id,
+              unlockedAt: new Date((data as any).unlocked_at),
+            };
+
+            set((state) => ({
+              userAchievements: [...state.userAchievements, newUserAchievement]
+            }));
+
+            // 5. Rewards & Notifications
+            // Add XP from achievement
+            // Note: addXP is part of UserActions/ActivityActions
+            if (get().addXP) {
+              await get().addXP(userId, achievement.xp, `Conquista: ${achievement.name}`);
+            }
+
+            // Notify user
+            // Note: addNotification is part of NotificationActions
+            if (get().addNotification) {
+              await get().addNotification({
+                userId,
+                type: 'achievement' as any,
+                title: '🎉 Conquista Desbloqueada!',
+                message: `Você desbloqueou: ${achievement.name} (+${achievement.xp} XP)`,
+                read: false,
+              });
+            }
+
+          } catch (err) {
+            console.error('Unexpected error unlocking achievement:', err);
+          }
         },
 
         checkAchievements: (userId) => {
-          // TODO: Implement achievement checks based on user stats
-          const user = get().getUserById(userId);
+          const state = get();
+          const user = state.users.find(u => u.id === userId);
           if (!user) return;
 
-          // Example: Tasks completed
-          const completedTasks = get().tasks.filter(
+          // Helper to check and unlock
+          const check = (condition: boolean, achievementId: string) => {
+            if (condition) {
+              get().unlockAchievement(userId, achievementId);
+            }
+          };
+
+          // --- 1. Task Achievements ---
+          const completedTasks = state.tasks.filter(
             t => t.assignedTo === userId && t.status === 'done'
           );
 
-          if (completedTasks.length >= 10) {
-            get().unlockAchievement(userId, 'first-10-tasks');
-          }
+          check(completedTasks.length >= 1, 'first-task');
+          check(completedTasks.length >= 10, 'task-master-novice'); // 10 tasks
+          check(completedTasks.length >= 50, 'task-master-expert'); // 50 tasks
+          check(completedTasks.length >= 100, 'task-master-legend'); // 100 tasks
+
+          // --- 2. Streak Achievements ---
+          check(user.streak >= 3, 'streak-fire'); // 3 days
+          check(user.streak >= 7, 'streak-blazing'); // 7 days
+          check(user.streak >= 30, 'streak-legendary'); // 30 days
+
+          // --- 3. Level Achievements ---
+          check(user.level >= 5, 'level-5-club');
+          check(user.level >= 10, 'level-10-elite');
+          check(user.level >= 20, 'level-20-master');
         },
 
         getUserAchievements: (userId) => {

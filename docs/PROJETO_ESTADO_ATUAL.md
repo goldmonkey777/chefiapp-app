@@ -766,7 +766,7 @@ Maintainability: 9/10
 
 ### Fase 1: Finalizar Setup (15 min)
 
-1. Seguir `SETUP_RAPIDO.md`
+1. Seguir `docs/archive/SETUP_RAPIDO.md`
 2. Configurar Supabase Dashboard
 3. Executar scripts SQL
 4. Testar OAuth flow

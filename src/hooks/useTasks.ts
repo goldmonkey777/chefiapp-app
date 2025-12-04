@@ -166,7 +166,7 @@ export function useTasks(userId: string): UseTasksReturn {
       );
 
       // Add to Zustand store
-      const newTask = addTask({
+      const newTask = await addTask({
         title: data.title,
         description: data.description,
         companyId: user.companyId,
@@ -180,6 +180,10 @@ export function useTasks(userId: string): UseTasksReturn {
         photoProof: null,
         duration: null,
       });
+
+      if (!newTask) {
+        throw new Error('Failed to create task');
+      }
 
       // Sync to Supabase
       const { error: supabaseError } = await supabase.from('tasks').insert({

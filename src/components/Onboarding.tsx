@@ -74,7 +74,7 @@ const STEPS = [
 ];
 
 // Estados unificados do onboarding para evitar conflitos
-type OnboardingState = 
+type OnboardingState =
   | 'intro'           // STEPS[0-4] - Introdução
   | 'profile'         // Login/Signup
   | 'join'            // QR Code/Código
@@ -101,16 +101,21 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   const savedCredentials = loadSavedCredentials();
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    role: '', 
-    companyCode: '', 
-    email: savedCredentials.email, 
-    password: savedCredentials.password 
+  const [formData, setFormData] = useState({
+    name: '',
+    role: '',
+    companyCode: '',
+    email: savedCredentials.email,
+    password: savedCredentials.password
   });
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
   const [loading, setLoading] = useState(false);
-  
+  const [error, setError] = useState<string | null>(null);
+  const [wantsToCreateCompany, setWantsToCreateCompany] = useState(false); // Rastrear se usuário quer criar empresa
+
+  // Hook must be called before any useEffect that uses its values
+  const { signInWithGoogle, signInWithApple, signInWithMagicLink, isAuthenticated, isLoading: authIsLoading, user } = useAuth();
+
   // Resetar loading quando autenticação completa
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -123,11 +128,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       setLoading(false);
     }
   }, [isAuthenticated, user, authIsLoading]);
-  const [error, setError] = useState<string | null>(null);
-  const [wantsToCreateCompany, setWantsToCreateCompany] = useState(false); // Rastrear se usuário quer criar empresa
-  const { signInWithGoogle, signInWithApple, signInWithMagicLink, isAuthenticated, isLoading: authIsLoading, user } = useAuth();
   const debug = import.meta.env.DEV;
-  
+
   // Estados derivados para compatibilidade (serão removidos gradualmente)
   const isProfileStep = onboardingState === 'profile';
   const isJoinStep = onboardingState === 'join';
@@ -211,7 +213,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           <div className="bg-white/10 p-6 rounded-3xl backdrop-blur-md w-full max-w-md">
             <div className="text-center mb-8">
               <div className="w-20 h-20 bg-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xl p-2">
-                <img src="/logo.png" alt="ChefIApp" className="w-full h-full object-contain" />
+                <img src="/chefiapp-logo.png" alt="ChefIApp" className="w-full h-full object-contain" />
               </div>
               <h2 className="text-2xl font-bold">{authMode === 'signup' ? 'Join Your Company' : 'Welcome Back'}</h2>
               <p className="text-blue-100 text-sm mt-2">
@@ -318,10 +320,10 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Verificar se já está autenticado
                     const { data: { session } } = await supabase.auth.getSession();
-                    
+
                     if (session?.user) {
                       // Já autenticado, pode criar empresa
                       setOnboardingState('company');
@@ -437,7 +439,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                       }
                     });
                     if (error) throw error;
-                    
+
                     // Salvar credenciais após signup bem-sucedido
                     try {
                       localStorage.setItem('chefiapp_saved_email', trimmedEmail);
@@ -464,13 +466,13 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
                       if (profileError) throw profileError;
 
-                      // Check if user has an employee profile (optional - table might not exist)
+                      // Check if user has a company assigned
                       let empProfile = null;
                       try {
                         const { data: empData } = await supabase
-                          .from('employee_profile')
+                          .from('profiles')
                           .select('*')
-                          .eq('user_id', userId)
+                          .eq('id', userId)
                           .maybeSingle();
                         empProfile = empData;
                       } catch (empError: any) {
@@ -503,7 +505,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                       password: formData.password,
                     });
                     if (error) throw error;
-                    
+
                     // Salvar credenciais após login bem-sucedido
                     try {
                       localStorage.setItem('chefiapp_saved_email', trimmedEmail);
@@ -528,13 +530,13 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         throw new Error('Perfil não encontrado. Por favor, entre em contato com o suporte.');
                       }
 
-                      // Check if user has an employee profile (optional - table might not exist)
+                      // Check if user has a company assigned
                       let empProfile = null;
                       try {
                         const { data: empData, error: empError } = await supabase
-                          .from('employee_profile')
+                          .from('profiles')
                           .select('*')
-                          .eq('user_id', data.user.id)
+                          .eq('id', data.user.id)
                           .maybeSingle();
 
                         if (!empError && empData) {
@@ -588,6 +590,9 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <div className="flex-1 flex flex-col items-center justify-center space-y-8">
           <div className="bg-white/10 p-6 rounded-3xl backdrop-blur-md w-full max-w-md">
             <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg p-2">
+                <img src="/chefiapp-logo.png" alt="ChefIApp" className="w-full h-full object-contain" />
+              </div>
               <h2 className="text-2xl font-bold">Join Your Team</h2>
               <p className="text-blue-100 text-sm mt-2">
                 Select how you want to connect

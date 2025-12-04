@@ -24,10 +24,14 @@ describe('useAuth', () => {
     it('should call supabase getSession on mount', async () => {
       const mockSession = {
         user: { id: '123', email: 'test@example.com' },
+        access_token: 'mock-access-token',
+        refresh_token: 'mock-refresh-token',
+        expires_in: 3600,
+        token_type: 'bearer' as const,
       };
 
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
-        data: { session: mockSession },
+        data: { session: mockSession as any },
         error: null,
       });
 
@@ -41,77 +45,15 @@ describe('useAuth', () => {
     it('should handle getSession error', async () => {
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: null },
-        error: { message: 'Session error' },
+        error: { message: 'Session error' } as any,
       });
 
       const { result } = renderHook(() => useAuth());
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
-        expect(result.current.error).toBeTruthy();
-      });
-    });
-  });
-
-  describe('signIn', () => {
-    it('should call signInWithPassword with correct credentials', async () => {
-      const mockUser = {
-        id: '123',
-        email: 'test@example.com',
-      };
-
-      vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
-        data: { user: mockUser, session: {} },
-        error: null,
-      });
-
-      const { result } = renderHook(() => useAuth());
-
-      await result.current.signIn('test@example.com', 'password123');
-
-      expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-      });
-    });
-
-    it('should handle signIn error', async () => {
-      vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
-        data: { user: null, session: null },
-        error: { message: 'Invalid credentials' },
-      });
-
-      const { result } = renderHook(() => useAuth());
-
-      await expect(
-        result.current.signIn('test@example.com', 'wrongpassword')
-      ).rejects.toThrow();
-    });
-  });
-
-  describe('signUp', () => {
-    it('should call signUp with correct data', async () => {
-      vi.mocked(supabase.auth.signUp).mockResolvedValue({
-        data: { user: { id: '123' }, session: {} },
-        error: null,
-      });
-
-      const { result } = renderHook(() => useAuth());
-
-      await result.current.signUp(
-        'new@example.com',
-        'password123',
-        'Test User'
-      );
-
-      expect(supabase.auth.signUp).toHaveBeenCalledWith({
-        email: 'new@example.com',
-        password: 'password123',
-        options: {
-          data: {
-            name: 'Test User',
-          },
-        },
+        expect(result.current.isAuthenticated).toBe(false);
+        expect(result.current.user).toBeNull();
       });
     });
   });

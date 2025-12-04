@@ -1,0 +1,80 @@
+# ========================================
+# Dependabot Configuration for ChefIApp™
+# ========================================
+# Automatically checks for dependency updates
+# and creates PRs to keep packages up-to-date
+
+version: 2
+
+updates:
+  # ----------------------------------------
+  # NPM Dependencies
+  # ----------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "goldmonkey777"
+    labels:
+      - "dependencies"
+      - "automated"
+      - "npm"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      # Group all production dependencies
+      production-dependencies:
+        patterns:
+          - "react*"
+          - "@supabase/*"
+          - "lucide-react"
+          - "zustand"
+          - "i18next"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group all dev dependencies
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "typescript"
+          - "vite*"
+          - "eslint*"
+          - "tailwindcss"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group Capacitor updates
+      capacitor:
+        patterns:
+          - "@capacitor/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ----------------------------------------
+  # GitHub Actions
+  # ----------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    reviewers:
+      - "goldmonkey777"
+    labels:
+      - "dependencies"
+      - "automated"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+

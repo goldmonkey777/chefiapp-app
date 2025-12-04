@@ -506,7 +506,7 @@ Toda a análise e correções foram documentadas em:
    - Executar scripts SQL em `supabase/sql/`
    - Criar buckets de storage
    - Configurar OAuth providers
-   - Seguir `SETUP_RAPIDO.md`
+   - Seguir `docs/archive/SETUP_RAPIDO.md`
 
 4. **Build e Deploy**
    - Projeto compila sem erros ✅

@@ -125,6 +125,13 @@ export const OnboardingJoin: React.FC<OnboardingJoinProps> = ({ user, onComplete
         </button>
 
         <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg overflow-hidden">
+            <img
+              src="/chefiapp-logo.png"
+              alt="ChefIApp logo"
+              className="w-full h-full object-contain"
+            />
+          </div>
           <h2 className="text-3xl font-bold text-white mb-2">
             Entrar em uma Empresa
           </h2>

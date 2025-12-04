@@ -231,49 +231,166 @@ export interface LevelUpResult {
 // DATABASE TYPES (Supabase)
 // ============================================
 
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+// DB-specific interfaces (snake_case to match Supabase schema)
+export interface UserDB {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  company_id: string;
+  sector: Sector;
+  xp: number;
+  level: number;
+  streak: number;
+  shift_status: ShiftStatus;
+  last_check_in: string | null;
+  last_check_out: string | null;
+  profile_photo: string;
+  created_at: string;
+  auth_method: AuthMethod;
+}
+
+export interface CompanyDB {
+  id: string;
+  name: string;
+  type: CompanyType;
+  qr_code: string;
+  owner_id: string;
+  created_at: string;
+  total_employees: number;
+  active_employees: number;
+}
+
+export interface TaskDB {
+  id: string;
+  title: string;
+  description: string;
+  company_id: string;
+  assigned_to: string;
+  created_by: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  xp_reward: number;
+  started_at: string | null;
+  completed_at: string | null;
+  photo_proof: string | null;
+  duration: number | null;
+  created_at: string;
+}
+
+export interface CheckInDB {
+  id: string;
+  user_id: string;
+  company_id: string;
+  check_in_time: string;
+  check_out_time: string | null;
+  location_lat: number | null;
+  location_lng: number | null;
+  duration: number | null;
+  created_at: string;
+}
+
+export interface ActivityDB {
+  id: string;
+  user_id: string;
+  company_id: string;
+  type: ActivityType;
+  description: string;
+  xp_change: number;
+  created_at: string;
+}
+
+export interface AchievementDB {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  xp: number;
+  trigger_type: string;
+  trigger_value: number | null;
+  created_at: string;
+}
+
+export interface UserAchievementDB {
+  id: string;
+  user_id: string;
+  achievement_id: string;
+  unlocked_at: string;
+}
+
+export interface NotificationDB {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
-      users: {
-        Row: User;
-        Insert: Omit<User, 'id' | 'createdAt'>;
-        Update: Partial<Omit<User, 'id' | 'createdAt'>>;
+      profiles: {
+        Row: UserDB;
+        Insert: Omit<UserDB, 'id' | 'created_at'>;
+        Update: Partial<Omit<UserDB, 'id' | 'created_at'>>;
       };
       companies: {
-        Row: Company;
-        Insert: Omit<Company, 'id' | 'createdAt' | 'totalEmployees' | 'activeEmployees'>;
-        Update: Partial<Omit<Company, 'id' | 'createdAt'>>;
+        Row: CompanyDB;
+        Insert: Omit<CompanyDB, 'id' | 'created_at' | 'total_employees' | 'active_employees'>;
+        Update: Partial<Omit<CompanyDB, 'id' | 'created_at'>>;
       };
       tasks: {
-        Row: Task;
-        Insert: Omit<Task, 'id' | 'createdAt'>;
-        Update: Partial<Omit<Task, 'id' | 'createdAt'>>;
+        Row: TaskDB;
+        Insert: Omit<TaskDB, 'id' | 'created_at'>;
+        Update: Partial<Omit<TaskDB, 'id' | 'created_at'>>;
       };
       check_ins: {
-        Row: CheckIn;
-        Insert: Omit<CheckIn, 'id' | 'createdAt'>;
-        Update: Partial<Omit<CheckIn, 'id' | 'createdAt'>>;
+        Row: CheckInDB;
+        Insert: Omit<CheckInDB, 'id' | 'created_at'>;
+        Update: Partial<Omit<CheckInDB, 'id' | 'created_at'>>;
       };
       notifications: {
-        Row: Notification;
-        Insert: Omit<Notification, 'id' | 'createdAt'>;
-        Update: Partial<Omit<Notification, 'id' | 'createdAt'>>;
+        Row: NotificationDB;
+        Insert: Omit<NotificationDB, 'id' | 'created_at'>;
+        Update: Partial<Omit<NotificationDB, 'id' | 'created_at'>>;
       };
       activities: {
-        Row: Activity;
-        Insert: Omit<Activity, 'id' | 'createdAt'>;
-        Update: Partial<Omit<Activity, 'id' | 'createdAt'>>;
+        Row: ActivityDB;
+        Insert: Omit<ActivityDB, 'id' | 'created_at'>;
+        Update: Partial<Omit<ActivityDB, 'id' | 'created_at'>>;
       };
       achievements: {
-        Row: Achievement;
-        Insert: Omit<Achievement, 'createdAt'>;
-        Update: Partial<Omit<Achievement, 'id' | 'createdAt'>>;
+        Row: AchievementDB;
+        Insert: Omit<AchievementDB, 'id' | 'created_at'>;
+        Update: Partial<Omit<AchievementDB, 'id' | 'created_at'>>;
       };
       user_achievements: {
-        Row: UserAchievement;
-        Insert: Omit<UserAchievement, 'id' | 'unlockedAt'>;
-        Update: Partial<Omit<UserAchievement, 'id'>>;
+        Row: UserAchievementDB;
+        Insert: Omit<UserAchievementDB, 'id'> & { unlocked_at?: string };
+        Update: Partial<Omit<UserAchievementDB, 'id'>>;
       };
     };
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   };
 }

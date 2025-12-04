@@ -169,14 +169,14 @@ export const TaskCard: React.FC<TaskCardProps> = React.memo(({
 
   return (
     <>
-      <div className={`rounded-2xl border-2 p-5 transition-all ${getPriorityColor()}`}>
+      <div className={`rounded-2xl border-2 p-5 transition-all ${priorityColor}`}>
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <h3 className="font-bold text-lg text-gray-900 mb-1">{task.title}</h3>
             <p className="text-sm text-gray-600 line-clamp-2">{task.description}</p>
           </div>
-          {getPriorityBadge()}
+          {priorityBadge}
         </div>
 
         {/* Metadata */}

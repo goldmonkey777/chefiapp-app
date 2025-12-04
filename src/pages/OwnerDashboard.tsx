@@ -1,17 +1,16 @@
 // ChefIApp™ - Owner Dashboard
-// Dashboard do dono com visão completa da empresa
+// Dashboard do dono com visão completa da empresa (Optimized)
 
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useCompany } from '../hooks/useCompany';
 import { useNotifications } from '../hooks/useNotifications';
 import { useAppStore } from '../stores/useAppStore';
-import { Building, Users, TrendingUp, Award, QrCode as QrCodeIcon, Plus, Calendar } from 'lucide-react';
+import { Building, Users, TrendingUp, Award, QrCode as QrCodeIcon, Plus, Calendar, Settings } from 'lucide-react';
 import { useTasks } from '../hooks/useTasks';
 import { Task, Shift } from '../lib/types';
 
-// Componentes UI
-import { Leaderboard } from '../components/Leaderboard';
+// Componentes UI (importação direta para componentes leves)
 import { QRCodeGenerator } from '../components/QRCodeGenerator';
 import { NotificationBell } from '../components/NotificationBell';
 import { BottomNavigation, NavigationView } from '../components/BottomNavigation';
@@ -20,9 +19,28 @@ import { TaskForm } from '../components/TaskManagement/TaskForm';
 import { ShiftCalendar } from '../components/ShiftManagement/ShiftCalendar';
 import { ShiftForm } from '../components/ShiftManagement/ShiftForm';
 
-export const OwnerDashboard: React.FC = () => {
+// Lazy loading para componentes pesados
+const Leaderboard = lazy(() => import('../components/Leaderboard'));
+const SettingsPage = lazy(() => import('./SettingsPage'));
+
+// Loading placeholder para lazy components
+const LoadingPlaceholder: React.FC<{ message?: string }> = ({ message = 'Carregando...' }) => (
+  <div className="flex items-center justify-center py-12">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent mx-auto mb-2"></div>
+      <p className="text-gray-500 text-sm">{message}</p>
+    </div>
+  </div>
+);
+
+const OwnerDashboard: React.FC = React.memo(() => {
   const { user } = useAuth();
   const [currentView, setCurrentView] = useState<NavigationView>('dashboard');
+
+  // Memoizar função de navegação para evitar re-renders
+  const handleNavigate = useCallback((view: NavigationView) => {
+    setCurrentView(view);
+  }, []);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
@@ -94,7 +112,17 @@ export const OwnerDashboard: React.FC = () => {
                   <p className="text-gray-600">{company.name}</p>
                 )}
               </div>
-              <NotificationBell userId={user.id} />
+              <div className="flex items-center gap-2">
+                <NotificationBell userId={user.id} />
+                <button
+                  onClick={() => setCurrentView('settings')}
+                  className="relative p-2 bg-white hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0 border border-gray-200 shadow focus-visible:outline focus-visible:ring-2 focus-visible:ring-blue-500"
+                  aria-label="Configurações"
+                  title="Configurações"
+                >
+                  <Settings className="w-6 h-6 text-gray-800" strokeWidth={2.75} />
+                </button>
+              </div>
             </div>
 
             {/* Company Card */}
@@ -197,11 +225,13 @@ export const OwnerDashboard: React.FC = () => {
             {/* Leaderboard */}
             <div>
               <h2 className="text-xl font-bold mb-4">Top Performers</h2>
-              <Leaderboard
-                companyId={company!.id}
-                limit={10}
-                showCurrentUser={false}
-              />
+              <Suspense fallback={<LoadingPlaceholder message="Carregando ranking..." />}>
+                <Leaderboard
+                  companyId={company!.id}
+                  limit={10}
+                  showCurrentUser={false}
+                />
+              </Suspense>
             </div>
 
             {/* Employee List */}
@@ -317,11 +347,13 @@ export const OwnerDashboard: React.FC = () => {
       case 'leaderboard':
         return (
           <div className="space-y-6 pb-24">
-            <Leaderboard
-              companyId={company!.id}
-              limit={20}
-              showCurrentUser={false}
-            />
+            <Suspense fallback={<LoadingPlaceholder message="Carregando ranking..." />}>
+              <Leaderboard
+                companyId={company!.id}
+                limit={20}
+                showCurrentUser={false}
+              />
+            </Suspense>
           </div>
         );
 
@@ -351,9 +383,20 @@ export const OwnerDashboard: React.FC = () => {
 
       case 'profile':
         return (
-          <div className="space-y-6 pb-24">
-            <h1 className="text-2xl font-bold">Configurações</h1>
-            {/* Owner settings */}
+          <div className="space-y-6 pb-24 pt-safe">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold">Meu Perfil</h1>
+            </div>
+            {/* Owner profile content */}
+          </div>
+        );
+
+      case 'settings':
+        return (
+          <div className="pb-24 pt-safe">
+            <Suspense fallback={<LoadingPlaceholder message="Carregando configurações..." />}>
+              <SettingsPage />
+            </Suspense>
           </div>
         );
     }
@@ -362,7 +405,9 @@ export const OwnerDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 safe-area-insets">
       <div className="max-w-7xl mx-auto p-6">
-        {renderView()}
+        <div className="animate-fade-in">
+          {renderView()}
+        </div>
       </div>
 
       {/* QR Code Modal */}
@@ -414,11 +459,13 @@ export const OwnerDashboard: React.FC = () => {
 
       <BottomNavigation
         currentView={currentView}
-        onNavigate={setCurrentView}
+        onNavigate={handleNavigate}
         unreadNotifications={unreadCount}
       />
     </div>
   );
-};
+});
+
+OwnerDashboard.displayName = 'OwnerDashboard';
 
 export default OwnerDashboard;

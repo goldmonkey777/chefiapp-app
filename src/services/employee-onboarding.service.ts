@@ -185,15 +185,15 @@ export async function onboardViaQRCode(
 
     // 5. Create employee profile
     const { data: profile, error: profileError } = await supabase
-      .from('employee_profile')
-      .insert({
-        user_id,
-        company_id,
+      .from('profiles')
+      .update({
+        company_id: company_id,
         role: 'employee',
         employment_status: 'active',
         joined_via: 'qr_code',
-        hired_at: Date.now(),
+        hired_at: new Date().toISOString(),
       })
+      .eq('id', user_id)
       .select()
       .single();
 
@@ -312,17 +312,18 @@ export async function onboardViaManagerAdd(
   try {
     const { user_id, company_id, assigned_role, assigned_sector, assigned_by } = request;
 
-    // 1. Get company data
-    const { data: company } = await supabase
-      .from('company')
+    // 1. Fetch company details
+    const { data: company, error: companyError } = await supabase
+      .from('companies')
       .select('*')
       .eq('id', company_id)
       .single();
 
-    if (!company) {
-      return { success: false, error: 'Company not found' };
+    if (companyError || !company) {
+      throw new Error(`Company not found: ${companyError?.message}`);
     }
 
+    const companyName = company.name;
     // 2. Load company context
     const context = await loadCompanyContext(company_id, company.country_code);
 

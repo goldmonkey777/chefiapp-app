@@ -7,8 +7,8 @@ import { TaskStatus, TaskPriority } from '../lib/types';
 describe('TaskCard', () => {
   const mockTask = {
     id: 'task-1',
-    title: 'Clean Kitchen',
-    description: 'Deep clean the kitchen area',
+    title: 'Limpar Cozinha',
+    description: 'Limpeza profunda da área da cozinha',
     companyId: 'company-1',
     assignedTo: 'user-1',
     createdBy: 'manager-1',
@@ -24,30 +24,29 @@ describe('TaskCard', () => {
 
   it('should render task title', () => {
     render(<TaskCard task={mockTask} />);
-    expect(screen.getByText('Clean Kitchen')).toBeInTheDocument();
+    expect(screen.getByText('Limpar Cozinha')).toBeInTheDocument();
   });
 
   it('should render task description', () => {
     render(<TaskCard task={mockTask} />);
-    expect(screen.getByText('Deep clean the kitchen area')).toBeInTheDocument();
+    expect(screen.getByText('Limpeza profunda da área da cozinha')).toBeInTheDocument();
   });
 
   it('should display XP reward', () => {
     render(<TaskCard task={mockTask} />);
-    expect(screen.getByText(/50/)).toBeInTheDocument();
+    expect(screen.getByText(/\+50 XP/)).toBeInTheDocument();
   });
 
   it('should show priority badge for high priority', () => {
     render(<TaskCard task={mockTask} />);
-    const priorityBadge = screen.getByText(/high/i);
-    expect(priorityBadge).toBeInTheDocument();
+    expect(screen.getByText('Alta')).toBeInTheDocument();
   });
 
   it('should call onStart when start button is clicked', () => {
     const onStart = vi.fn();
     render(<TaskCard task={mockTask} onStart={onStart} />);
 
-    const startButton = screen.getByRole('button', { name: /start/i });
+    const startButton = screen.getByRole('button', { name: /INICIAR TAREFA/i });
     fireEvent.click(startButton);
 
     expect(onStart).toHaveBeenCalledWith(mockTask.id);
@@ -62,7 +61,7 @@ describe('TaskCard', () => {
 
     render(<TaskCard task={completedTask} />);
 
-    expect(screen.queryByRole('button', { name: /start/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /INICIAR TAREFA/i })).not.toBeInTheDocument();
   });
 
   it('should show timer for in-progress tasks', () => {
@@ -74,8 +73,8 @@ describe('TaskCard', () => {
 
     render(<TaskCard task={inProgressTask} />);
 
-    // Should show some time indication
-    expect(screen.getByText(/progress/i)).toBeInTheDocument();
+    // Should show "Tempo decorrido"
+    expect(screen.getByText(/Tempo decorrido:/i)).toBeInTheDocument();
   });
 
   it('should display completion time for done tasks', () => {
@@ -89,27 +88,27 @@ describe('TaskCard', () => {
     render(<TaskCard task={completedTask} />);
 
     // Should show completion indicator
-    expect(screen.getByText(/done/i)).toBeInTheDocument();
+    expect(screen.getByText(/Concluída/i)).toBeInTheDocument();
   });
 
   it('should apply correct styling for priority levels', () => {
-    const { rerender } = render(<TaskCard task={mockTask} />);
+    const { rerender, container } = render(<TaskCard task={mockTask} />);
 
-    // High priority
-    expect(screen.getByTestId('task-card')).toHaveClass(/high/i);
+    // High priority (red)
+    expect(container.firstChild).toHaveClass('bg-red-50');
 
-    // Medium priority
+    // Medium priority (yellow)
     const mediumTask = { ...mockTask, priority: TaskPriority.MEDIUM };
     rerender(<TaskCard task={mediumTask} />);
-    expect(screen.getByTestId('task-card')).toHaveClass(/medium/i);
+    expect(container.firstChild).toHaveClass('bg-yellow-50');
 
-    // Low priority
+    // Low priority (green)
     const lowTask = { ...mockTask, priority: TaskPriority.LOW };
     rerender(<TaskCard task={lowTask} />);
-    expect(screen.getByTestId('task-card')).toHaveClass(/low/i);
+    expect(container.firstChild).toHaveClass('bg-green-50');
   });
 
-  it('should show photo proof when available', () => {
+  it('should show photo proof button when available', () => {
     const taskWithPhoto = {
       ...mockTask,
       status: TaskStatus.DONE,
@@ -118,9 +117,8 @@ describe('TaskCard', () => {
 
     render(<TaskCard task={taskWithPhoto} />);
 
-    const photo = screen.getByRole('img');
-    expect(photo).toBeInTheDocument();
-    expect(photo).toHaveAttribute('src', taskWithPhoto.photoProof);
+    const photoButton = screen.getByRole('button', { name: /VER FOTO-PROVA/i });
+    expect(photoButton).toBeInTheDocument();
   });
 
   it('should handle missing description gracefully', () => {
@@ -131,6 +129,6 @@ describe('TaskCard', () => {
 
     render(<TaskCard task={taskWithoutDescription} />);
 
-    expect(screen.getByText('Clean Kitchen')).toBeInTheDocument();
+    expect(screen.getByText('Limpar Cozinha')).toBeInTheDocument();
   });
 });
